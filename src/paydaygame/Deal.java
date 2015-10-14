@@ -43,7 +43,7 @@ public class Deal {
         deck[23] = new DealCard(7500, 13000, 23); //Laughing Gas Inc
     }
     
-     private void shuffle() {
+     private void oldshuffle() {
         int index = 0;
         int index2 = 0;
         int cycles = 0;
@@ -61,9 +61,26 @@ public class Deal {
                compare[number] = true;
                index++;}
            }
-        System.out.println("The Deal Deck was shuffled!");
-        System.out.println("With a gastly " + cycles + " cycles!");
+        
     }
+     
+     private void shuffle() {
+        dealDeckOrder = new int[24];
+        for (int i=0; i < 24; i++) {
+         dealDeckOrder[i] = i;
+     }
+        int end = 23;
+        while (end > 0) {
+            int number = new Random().nextInt(end+1);
+            int temp = dealDeckOrder[number];
+            dealDeckOrder[number] = dealDeckOrder[end];
+            dealDeckOrder[end] = temp;
+            end--;
+        }
+        System.out.println("The Deal Deck was shuffled!");
+        for (int i=0; i < 24; i++) {System.out.println(dealDeckOrder[i]);
+        }
+     }
     
     public DealCard nextCard() {
         if (nextCard == 24) {
