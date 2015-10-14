@@ -46,6 +46,7 @@ public class Deal {
      private void shuffle() {
         int index = 0;
         int index2 = 0;
+        int cycles = 0;
         compare = new boolean[24];
         dealDeckOrder = new int[24];
         while (index2 < 24) {
@@ -53,13 +54,15 @@ public class Deal {
             index2++;
            }
         while (index < 24) {
-           int number = new Random().nextInt(24); //Deal deck has 24 cards
+           int number = new Random().nextInt(24);//Deal deck has 24 cards
+           cycles++;
            if (!compare[number]) { 
                dealDeckOrder[index] = number;
                compare[number] = true;
                index++;}
            }
         System.out.println("The Deal Deck was shuffled!");
+        System.out.println("With a gastly " + cycles + " cycles!");
     }
     
     public DealCard nextCard() {
