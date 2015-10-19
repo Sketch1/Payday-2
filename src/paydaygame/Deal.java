@@ -7,15 +7,14 @@ package paydaygame;
 
 import java.util.Random;
 
-public class Deal {
+public class Deal extends Deck {
     
-    int dealDeckOrder[];
     DealCard deck[];
-    boolean compare[];
     int nextCard = 0;
     
     public Deal() {
-        this.shuffle();
+        nextCard = 0;
+        System.out.println("The Deal Deck has been created!");
         deck = new DealCard[24];
         deck[0] = new DealCard(12000, 20000, 0); //Rocketship Internation
         deck[1] = new DealCard(3500, 6500, 1); //Shepherd's Pie Co
@@ -41,52 +40,18 @@ public class Deal {
         deck[21] = new DealCard(3500, 6000, 21); //Pop's Soda Pop Inc
         deck[22] = new DealCard(2000, 5500, 22); //Wheels 'N' Squeals Skateboards
         deck[23] = new DealCard(7500, 13000, 23); //Laughing Gas Inc
+        this.shuffle(24, "Deal");
     }
-    
-     private void oldshuffle() {
-        int index = 0;
-        int index2 = 0;
-        int cycles = 0;
-        compare = new boolean[24];
-        dealDeckOrder = new int[24];
-        while (index2 < 24) {
-            compare[index2] = false;
-            index2++;
-           }
-        while (index < 24) {
-           int number = new Random().nextInt(24);//Deal deck has 24 cards
-           cycles++;
-           if (!compare[number]) { 
-               dealDeckOrder[index] = number;
-               compare[number] = true;
-               index++;}
-           }
-        
-    }
-     
-     private void shuffle() {
-        dealDeckOrder = new int[24];
-        for (int i=0; i < 24; i++) {
-         dealDeckOrder[i] = i;
-     }
-        int end = 23;
-        while (end > 0) {
-            int number = new Random().nextInt(end+1);
-            int temp = dealDeckOrder[number];
-            dealDeckOrder[number] = dealDeckOrder[end];
-            dealDeckOrder[end] = temp;
-            end--;
-        }
-        System.out.println("The Deal Deck was shuffled!");
-        for (int i=0; i < 24; i++) {System.out.println(dealDeckOrder[i]);
-        }
-     }
     
     public DealCard nextCard() {
         if (nextCard == 24) {
-            this.shuffle();
+            this.shuffle(24, "Deal");
             nextCard = 0;}
         nextCard++;
-        return deck[dealDeckOrder[nextCard-1]];
+        System.out.println("The Deal deck has returned a card!");
+        deck[deckOrder[nextCard-1]].describeYourself();
+        return deck[deckOrder[nextCard-1]];
     }
+    
+    
 }

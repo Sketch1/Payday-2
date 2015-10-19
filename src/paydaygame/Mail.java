@@ -7,16 +7,15 @@ package paydaygame;
 
 import java.util.Random;
 
-public class Mail {
+public class Mail extends Deck {
     
-    int mailDeckOrder[];
+    
     MailCard deck[];
-    boolean compare[];
+    
     int nextCard = 0;
     
     public Mail() {
         System.out.println("The Mail Deck has been created!");
-        this.shuffle();
         deck = new MailCard[47];
         deck[0] = new MailCard(0, "", true, "Move ahead to the next buyer or dealer space!");
         deck[1] = new MailCard(0, "", true, "Move ahead to the next buyer or dealer space!");
@@ -65,6 +64,7 @@ public class Mail {
         deck[44] = new MailCard(2000, "player", false, "Mad Money");
         deck[45] = new MailCard(-300, "player", false, "Pay A Neighbour");
         deck[46] = new MailCard(-200, "player", false, "Pay A Neighbour");
+        this.shuffle(46, "Mail");
         /*mailCards = new int[45];
         mailCards[0] = 0; //Indicates "Move ahead to the next buyer or dealer space"
         mailCards[1] = 0;
@@ -115,39 +115,15 @@ public class Mail {
         mailCards[46] = -200; //To A Neighbour*/        
     }
     
-    private void shuffle() {
-        System.out.println("Reshuffling the mail deck...");
-        int index = 0;
-        int index2 = 0;
-        compare = new boolean[46];
-        mailDeckOrder = new int[46];
-        while (index2 < 46) {
-            compare[index2] = false;
-            index2++;
-           }
-        while (index < 46) {
-           int number = new Random().nextInt(46); //Mail deck has 46 cards 
-           if (!compare[number]) { 
-               mailDeckOrder[index] = number;
-               compare[number] = true;
-               index++;}
-           }
-        System.out.println("The Mail Deck was shuffled!");
-        /*int printIndex = 0;
-        while (printIndex < 46) {
-            System.out.println(mailDeckOrder[printIndex]);
-            printIndex++;
-        }*/
-    }
     
     public MailCard nextCard() {
         if (nextCard == 46) {
-            this.shuffle();
+            this.shuffle(46, "Mail");
             nextCard = 0;}
         nextCard++;
         System.out.println("The mail deck has returned a card!");
-        deck[mailDeckOrder[nextCard-1]].describeYourself();
-        return deck[mailDeckOrder[nextCard-1]];
+        deck[deckOrder[nextCard-1]].describeYourself();
+        return deck[deckOrder[nextCard-1]];
     }
     
 }
