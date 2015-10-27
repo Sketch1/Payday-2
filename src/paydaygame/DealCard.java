@@ -1,9 +1,11 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2015 Galen Hite. Reproduce at your peril.
  */
 package paydaygame;
+
+/*This is the DealCard class, which contains all the peramiters of a card from
+the Deal deck. It contains getter methods for most paramiters (buyPrice, and 
+sellPrice, but not ID). It also contains the describe yourself method.*/
 
 public class DealCard {
     
@@ -12,14 +14,15 @@ public class DealCard {
      int ID;
      String name;
     
-    public DealCard(int c, int s, int n) {
+    public DealCard(int c, int s, int n) { /*Constuctor initiallizes class with 
+        passed peramiters.*/
         buyPrice = c;
         sellPrice = s;
         ID = n;
-        //A catch here, in case ID is somehow bigger than 23 would be good, and would meet a requirment.
+        //A catch here, in case ID is somehow bigger than 23, would be good, and would meet a requirement.
     }
     
-    public int getbuyPrice() {
+    public int getbuyPrice() { /*Basic getter methods.*/
         return buyPrice;
     }
     
@@ -27,7 +30,8 @@ public class DealCard {
         return sellPrice;
     }
     
-    public void describeYourself() {
+    public void describeYourself() { /*This method uses a long but simple case
+        statement to describe what the DealCard is, and how much it is sold for.*/
         switch (ID) {
             case 0:
                 name = "Rocketship Internation";

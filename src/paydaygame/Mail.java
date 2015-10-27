@@ -64,7 +64,10 @@ public class Mail extends Deck {
         deck[44] = new MailCard(2000, "player", false, "Mad Money");
         deck[45] = new MailCard(-300, "player", false, "Pay A Neighbour");
         deck[46] = new MailCard(-200, "player", false, "Pay A Neighbour");
-        this.shuffle(46, "Mail");
+        this.shuffle(46, "Mail");      
+    }
+    
+    private void cloakingDevice() {
         /*mailCards = new int[45];
         mailCards[0] = 0; //Indicates "Move ahead to the next buyer or dealer space"
         mailCards[1] = 0;
@@ -112,8 +115,12 @@ public class Mail extends Deck {
         mailCards[43] = -200; //Charity
         mailCards[44] = 2000; //From Player Of Your Choice (Mad Money)
         mailCards[45] = -300; //To A Neighbour
-        mailCards[46] = -200; //To A Neighbour*/        
-    }
+        mailCards[46] = -200; //To A Neighbour*/  
+    } /*This method allows me to hide
+    the annoying but nessessary commentted out original version of deck, which
+    includes comments showing what the various cards are. This could be useful
+    in the future, and so I don't want to delete it. This is called nor used by
+    nothing.*/
     
     
     public MailCard nextCard() {

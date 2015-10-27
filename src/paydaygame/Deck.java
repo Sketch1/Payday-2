@@ -3,6 +3,9 @@
  */
 package paydaygame;
 
+/*More needs to go here, but: The reason Deck does not contain nextCard is that it would have been too hard to make it compute correctly, with different
+numbers of cards in different decks.*/
+
 import java.util.Random;
 
 public class Deck {

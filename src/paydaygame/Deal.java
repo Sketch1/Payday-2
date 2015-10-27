@@ -1,9 +1,11 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2015 Galen Hite. Reproduce at your peril.
  */
 package paydaygame;
+
+/*This is the Deal Class, which is an extention of Deck. It contains the Deal 
+Deck, an arry of 24 DealCards. It also contains the nextCard method, which
+allows Players to draw from the deck.*/
 
 import java.util.Random;
 
@@ -12,7 +14,8 @@ public class Deal extends Deck {
     DealCard deck[];
     int nextCard = 0;
     
-    public Deal() {
+    public Deal() { /*This is the consturctor, which creates the Deal Deck, an 
+        array containing 24 DealCards, and then shuffles it.*/
         nextCard = 0;
         System.out.println("The Deal Deck has been created!");
         deck = new DealCard[24];
@@ -43,7 +46,9 @@ public class Deal extends Deck {
         this.shuffle(24, "Deal");
     }
     
-    public DealCard nextCard() {
+    public DealCard nextCard() { /*Next card returns the next card within to
+        Player, upon request. It also calls for the DealCard returned to describe
+        itself in the output.*/
         if (nextCard == 24) {
             this.shuffle(24, "Deal");
             nextCard = 0;}
@@ -52,6 +57,5 @@ public class Deal extends Deck {
         deck[deckOrder[nextCard-1]].describeYourself();
         return deck[deckOrder[nextCard-1]];
     }
-    
     
 }
