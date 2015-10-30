@@ -3,46 +3,54 @@
  */
 package paydaygame;
 
+/*This is arugably the most important class in the program. Player contains the 
+takeYourTurn method, which runs the game's cycle. It also has buyDealCard,
+sellDealCard, and doMailCard, to perform its other important functions.*/
+
 import java.util.Random;
 import java.util.LinkedList;
 
 public class Player {
-    //Interface must call the construction of as many of these as are needed.
+    //Global Varibles
     Interface toInterface;
     Board toBoard;
     Mail toMail;
-    int cash = 5000;
-    int boardPosition = 0;
-    int month = 1;
+    int cash = 5000; //Players start with $5000
+    int boardPosition = 0; //Players start on the Start Square.
+    int month = 1; //Players start in month 1.
     int moveAhead;
     int ID;
-    boolean finished = false;
+    boolean finished = false; //To finish, you must first play!
     Deal toDeal;
-    LinkedList myDealCards;
+    LinkedList handOfDealCards;
     
     public Player(Interface i, Board b, int in, Mail m, Deal d) {
+        /*Variables are initialized.*/
         toInterface = i;
         toBoard = b;
         ID = in;
         toMail = m;
         toDeal = d;
         System.out.println("Player " + ID + " has been created!");
-        myDealCards = new LinkedList();
+        handOfDealCards = new LinkedList();
     }
     
-    public void takeYourTurn() {
-        System.out.println("****************************************************");
+    public void takeYourTurn() { /*The most important method in the game. Since
+        it's quite complicated, a walkthrough has been added. This method is 
+        called by the loop running in Interface.startGame.*/
+        System.out.println("*************************************************");
         System.out.println("Player " + ID + " has started his turn!");
         System.out.println("At the start of his turn, he had $" + cash);
-        int movement = new Random().nextInt(5)+1;
+        int movement = new Random().nextInt(5)+1; //The rolling of the die
         System.out.println("He rolled a " + movement);
         if (boardPosition + movement >= 31) {boardPosition = 31;}
-        else {boardPosition = boardPosition + movement;}
+        else {boardPosition = boardPosition + movement;} /*Determines whether 
+        this move will take the player beyond 31, where every playuer must stop. Then, moves.*/
         System.out.println("He moves to space " + boardPosition);
-        String thingWeDo = toBoard.getResult(boardPosition);
+        String thingWeDo = toBoard.getResult(boardPosition); //Queries Board for the action to be taken on this space.
         System.out.println("He's landed on " + thingWeDo + "!");
-        switch (thingWeDo) {
-            case "Mail":
+        switch (thingWeDo) { //Does something based on what is returned by Board
+            case "Mail": //Draws cards from the Mail deck, running doMailCard each time.
                 int noOfCards = toBoard.additionalData[boardPosition];
                 System.out.println("Player " + ID + " draws " + noOfCards + " Mail Cards!");
                 for (int index = 1; index <= noOfCards; index++) {
@@ -50,23 +58,23 @@ public class Player {
                     this.doMailCard(card);
                 } 
                 break;
-            case "SweepstakesTirage":
+            case "SweepstakesTirage": //Gains $5000
                 //cash = cash + 5000;
                 this.adjustBalance(-5000);
                 System.out.println("Player " + ID + " has won the SweepstakesTirage!");
                 break;
-            case "Deal":
+            case "Deal": //Draws a card from the Deal deck, and calls buyDealCard
                     DealCard card = toDeal.nextCard();
                     System.out.println("Player " + ID + " draws a deal card!");
                     this.buyDealCard(card, 0); //Query Deal Class for cards
                 break;
-            case "Lotto":
+            case "Lotto": //Plays the lottery.
                 System.out.println("The lottery has started!");
                 //cash = cash - 100;
                 System.out.println("Each player will contribute $100 to the pool! The bank will contribute $1000!");
                 //this.adjustBalance(100);
                 toInterface.allPayersPlay(-100);
-                Player winnerL = toInterface.getOtherPlayer(-1);
+                Player winnerL = toInterface.getOtherPlayer(-1); //Calls getOtherPlayer in interface, passing -1 to cause any player to be a possible return.
                 System.out.println("Player " + winnerL.ID + " has won the lottery!");
                 System.out.println("He recives a total of $" + (1000+(100*toInterface.noOfPlayers)));
                 winnerL.adjustBalance(-1000-(100*toInterface.noOfPlayers));
@@ -171,7 +179,7 @@ public class Player {
         if (cash > buyPrice) {//cash = cash - buyPrice;
             System.out.println("Player " + ID + " bought a Deal!");
             this.adjustBalance(buyPrice);
-            myDealCards.add(d);
+            handOfDealCards.add(d);
         }
         else {System.out.println("Oh no! Player " + ID + " couldn't aford his deal!");}
     }
@@ -179,15 +187,15 @@ public class Player {
     public void sellDealCard() {
         int highestPrice = 0;
         int indexOfHighestPrice = 0;
-        boolean empty = myDealCards.isEmpty();
+        boolean empty = handOfDealCards.isEmpty();
         if (empty) {System.out.println("Oh No! Player " + ID + " Didn't have any deal cards!"); return;} 
-        for (int index = 0; index < myDealCards.size(); index++) {
-            DealCard card = (DealCard) myDealCards.get(index);
+        for (int index = 0; index < handOfDealCards.size(); index++) {
+            DealCard card = (DealCard) handOfDealCards.get(index);
             if (card.getsellPrice() > highestPrice) {highestPrice = card.getsellPrice(); indexOfHighestPrice = index;} 
         }
         //cash = cash + highestPrice;
         this.adjustBalance(-highestPrice);
-        myDealCards.remove(indexOfHighestPrice);
+        handOfDealCards.remove(indexOfHighestPrice);
     }
     
     public void adjustBalance(int a) {

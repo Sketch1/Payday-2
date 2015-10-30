@@ -1,11 +1,11 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2015 Galen Hite. Reproduce at your peril.
  */
 package paydaygame;
 
-import java.util.Random;
+/*This is the Mail class, which contains the array deck. It is very similar to 
+the Deal class, and contains the same methods, including the nextCard method, 
+which allows Players to draw from the deck.*/
 
 public class Mail extends Deck {
     
@@ -14,7 +14,8 @@ public class Mail extends Deck {
     
     int nextCard = 0;
     
-    public Mail() {
+    public Mail() { /*This is the consturctor, which creates the Mail Deck, an 
+        array containing the 47 MailCards, and then shuffles it.*/
         System.out.println("The Mail Deck has been created!");
         deck = new MailCard[47];
         deck[0] = new MailCard(0, "", true, "Move ahead to the next buyer or dealer space!");
@@ -67,7 +68,11 @@ public class Mail extends Deck {
         this.shuffle(46, "Mail");      
     }
     
-    private void cloakingDevice() {
+    private void cloakingDevice() /*This method allows me to hide
+    the annoying but nessessary commentted out original version of deck, which
+    includes comments showing what the various cards are. This could be useful
+    in the future, and so I don't want to delete it. This is utterly redundant, 
+    and is neither called nor used by anything.*/ {
         /*mailCards = new int[45];
         mailCards[0] = 0; //Indicates "Move ahead to the next buyer or dealer space"
         mailCards[1] = 0;
@@ -116,14 +121,12 @@ public class Mail extends Deck {
         mailCards[44] = 2000; //From Player Of Your Choice (Mad Money)
         mailCards[45] = -300; //To A Neighbour
         mailCards[46] = -200; //To A Neighbour*/  
-    } /*This method allows me to hide
-    the annoying but nessessary commentted out original version of deck, which
-    includes comments showing what the various cards are. This could be useful
-    in the future, and so I don't want to delete it. This is called nor used by
-    nothing.*/
+    } 
     
     
-    public MailCard nextCard() {
+    public MailCard nextCard() { /*Next card returns the next card within to
+        Player, upon request. It also calls for the MailCard returned to describe
+        itself in the output.*/
         if (nextCard == 46) {
             this.shuffle(46, "Mail");
             nextCard = 0;}

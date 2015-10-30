@@ -7,8 +7,6 @@ package paydaygame;
 Deck, an arry of 24 DealCards. It also contains the nextCard method, which
 allows Players to draw from the deck.*/
 
-import java.util.Random;
-
 public class Deal extends Deck {
     
     DealCard deck[];
