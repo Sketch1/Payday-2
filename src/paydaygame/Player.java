@@ -41,8 +41,11 @@ public class Player {
         System.out.println("*************************************************");
         System.out.println("Player " + ID + " has started his turn!");
         System.out.println("At the start of his turn, he had $" + cash);
-        int movement = new Random().nextInt(5)+1; //The rolling of the die
+        int movement = new Random().nextInt(6)+1; //The rolling of the die
         System.out.println("He rolled a " + movement);
+        if (movement == 6) {this.adjustBalance(-toInterface.jackpot, false);
+            System.out.println("Player " + ID + " rolled a 6! He wins the jackpot, taking home $" + toInterface.jackpot);
+            toInterface.jackpot = 0;}
         if (boardPosition + movement >= 31) {boardPosition = 31;}
         else {boardPosition = boardPosition + movement;} /*Determines whether 
         this move will take the player beyond 31, where every playuer must stop. Then, moves.*/
@@ -60,7 +63,7 @@ public class Player {
                 break;
             case "SweepstakesTirage": //Gains $5000
                 //cash = cash + 5000;
-                this.adjustBalance(-5000);
+                this.adjustBalance(-5000, false);
                 System.out.println("Player " + ID + " has won the SweepstakesTirage!");
                 break;
             case "Deal": //Draws a card from the Deal deck, and calls buyDealCard
@@ -73,22 +76,22 @@ public class Player {
                 //cash = cash - 100;
                 System.out.println("Each player will contribute $100 to the pool! The bank will contribute $1000!");
                 //this.adjustBalance(100);
-                toInterface.allPayersPlay(-100);
+                toInterface.allPayersPlay(-100, false);
                 Player winnerL = toInterface.getOtherPlayer(-1); //Calls getOtherPlayer in interface, passing -1 to cause any player to be a possible return.
                 System.out.println("Player " + winnerL.ID + " has won the lottery!");
                 System.out.println("He recives a total of $" + (1000+(100*toInterface.noOfPlayers)));
-                winnerL.adjustBalance(-1000-(100*toInterface.noOfPlayers));
+                winnerL.adjustBalance(-1000-(100*toInterface.noOfPlayers), false);
                 break;
             case "Pay": //Called by several squares, this causes the simple reduction of a Player's money.
                 //cash = cash - toBoard.additionalData[boardPosition];/* - Query additional data for amount*/;
-                this.adjustBalance(toBoard.additionalData[boardPosition]);
+                this.adjustBalance(toBoard.additionalData[boardPosition], true);
                 System.out.println("Thanks to where he landed, Player " + ID + " payed through the nose!");
                 break;
             case "RadioShow": //A random player wins $1000. In the game this was determined by the first player to roll a 3. We ditched that.
                 System.out.println("A Phone In Radio Show has started!");
                 Player winnerRS = toInterface.getOtherPlayer(-1);
                 System.out.println("Player " + winnerRS.ID + " has won the Radioshow! He gets $1000!");
-                winnerRS.adjustBalance(-1000);
+                winnerRS.adjustBalance(-1000, false);
                 break;
             case "Buyer": //This causes the player to sell the highest priced DealCard he has. It deverts to sellDealCard.
                 //Sell highest price deal card
@@ -98,8 +101,8 @@ public class Player {
                 System.out.println("It's Player " + ID + "'s Birthday!");
                 //cash = cash + toInterface.noOfPlayers*100;/*+ number of players playing x 100*/;
                 System.out.println("He collected $100 from each player, bringing his total takings to " + toInterface.noOfPlayers*100);
-                this.adjustBalance(toInterface.noOfPlayers*-100);
-                toInterface.allPayersPlay(toInterface.noOfPlayers*-100);
+                this.adjustBalance(toInterface.noOfPlayers*-100, false);
+                toInterface.allPayersPlay(toInterface.noOfPlayers*-100, false);
                 break;
             case "Yardsale": //Allows the Player to aquire a DealCard increadably cheeply.
                 System.out.println("Player " + ID + "has gone to a yard sale. He found a great deal!");
@@ -112,14 +115,14 @@ public class Player {
                 //Everyone else pays 100xroll
                 int money = (new Random().nextInt(5)+1)*100;
                 System.out.println("The entry fee for this walk is $" + money);
-                toInterface.allPayersPlay(money);
+                toInterface.allPayersPlay(money, true);
                 //cash = cash + (money);
-                this.adjustBalance(-money);
+                this.adjustBalance(-money, true);
                 break;
             case "Payday": //Player aquires $3500 and checks if the game is over.
                 System.out.println("Player " + ID + " has landed on PAYDAY!");
                 //cash = cash + 3500;
-                this.adjustBalance(-3500);
+                this.adjustBalance(-3500, false);
                 month++;
                 System.out.println("He is now in month " + month);
                 boardPosition = 0;
@@ -156,14 +159,14 @@ public class Player {
                 case "pay": //Basic bills cause the Player to pay money to the bank
                     //cash = cash + amount;
                     System.out.println("Player " + ID + " Payed a bill for " + amount);
-                    this.adjustBalance(-amount);
+                    this.adjustBalance(-amount, true); //ALERT! ROGUE - SIGN DETECTED!
                     break;
                 case "player": //Players pay money to other players. Sometimes the current Player is on the receiving end.
                     Player payee = toInterface.getOtherPlayer(ID);
                     //cash = cash + amount;
                     System.out.println("Player " + payee.ID + " payed Player " + ID + " $" + amount);
-                    this.adjustBalance(-amount);
-                    payee.adjustBalance(amount);
+                    this.adjustBalance(-amount, false);
+                    payee.adjustBalance(amount, false);
                     break;
             }
         }
@@ -180,7 +183,7 @@ public class Player {
         d.describeYourself();
         if (cash > buyPrice) {//cash = cash - buyPrice;
             System.out.println("Player " + ID + " bought a Deal!");
-            this.adjustBalance(buyPrice);
+            this.adjustBalance(buyPrice, true);
             handOfDealCards.add(d);
         }
         else {System.out.println("Oh no! Player " + ID + " couldn't aford his deal!");}
@@ -199,11 +202,11 @@ public class Player {
             if (card.getsellPrice() > highestPrice) {highestPrice = card.getsellPrice(); indexOfHighestPrice = index;} 
         }
         //cash = cash + highestPrice;
-        this.adjustBalance(-highestPrice);
+        this.adjustBalance(-highestPrice, false);
         handOfDealCards.remove(indexOfHighestPrice);
     }
     
-    public void adjustBalance(int a) { /*This is the method though which all 
+    public void adjustBalance(int a, boolean bank) { /*This is the method though which all 
         changes to the Player's balance must pass. The method currently works
         on an inverted system, because when it was created, it was handling only
         certain transactions, where it made more sense to subtract a. Now, though,
@@ -212,11 +215,14 @@ public class Player {
         cash = cash - a;
         System.out.println("Player " + ID + "'s Balance is now $" + cash);
         toInterface.printCash(cash, month, ID);
+        if (bank) {toInterface.jackpot = toInterface.jackpot+a;
+            System.out.println("Thanks to the type of transaction, " + a + " was added to the Jackpot!");
+            System.out.println("It's now $" + toInterface.jackpot);}
     }
     
     public boolean getFinished() { //Basic getters.
-        if (finished) {System.out.println("Player " + ID + " is finished!"); this.adjustBalance(-0);}
-        else {System.out.println("Player " + ID + " is not finished"); this.adjustBalance(-0);}
+        if (finished) {System.out.println("Player " + ID + " is finished!"); this.adjustBalance(-0, false);}
+        else {System.out.println("Player " + ID + " is not finished"); this.adjustBalance(-0, false);}
         return finished;
     }
     
