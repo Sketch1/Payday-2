@@ -17,6 +17,7 @@ public class Deck {
     int deckOrder[];
     Deal toDealDeck;
     Mail toMailDeck;
+    Interface toInterface;
     
     public Deck() {
         /*Deck is not constructed. It is just an idea that other classes refer
@@ -29,7 +30,7 @@ public class Deck {
         deckOrder = new int[noOfCards]; //Creates deckOrder.
         for (int i=0; i < noOfCards; i++) {
          deckOrder[i] = i;
-        }
+            }
         int end = noOfCards-1;
         while (end > 0) { //This is the actual shuffle part.
             int number = new Random().nextInt(end+1); /*Generates a new random number,
@@ -40,9 +41,11 @@ public class Deck {
             moved to the generated slot.*/
             deckOrder[end] = temp; //Other number placed at end of deck.
             end--; //End of deck reduced to eliminate moving of number just moved.
-        }
+            }
         System.out.println("The " + deck + " Deck was shuffled!");
-        //for (int i=0; i < 24; i++) {System.out.println(dealDeckOrder[i]);}
+        if (toInterface.devMode == true) {for (int i=0; i < 24; i++) {
+            System.out.println("(DEV MODE) Here's the order:");
+            System.out.println(deckOrder[i]);}}
      }
     
     

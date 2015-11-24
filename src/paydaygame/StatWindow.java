@@ -21,6 +21,7 @@ public class StatWindow {
     JFrame toJFrame;
     JPanel toJPanel;
     JTable dataTable;
+    Interface toInterface;
     
     public StatWindow (int players, int months) { /*This is the consturctor, which
         is called from startGame in Interface. It sets up the window. I find most
@@ -52,8 +53,7 @@ public class StatWindow {
     }
     
     public void close() {
-        System.out.println("The window was supposed to close.");
-        //toJFrame.dispatchEvent(new WindowEvent(toJFrame, WindowEvent.WINDOW_CLOSING));
+        if (toInterface.devMode) {System.out.println("(DEV MODE) The window was supposed to close.");}
         toJFrame.dispose();
     }
     
