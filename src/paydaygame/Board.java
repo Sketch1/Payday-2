@@ -7,7 +7,7 @@ package paydaygame;
 /*This class contains the board, which is an array of 31 spaces, each of which
 has a different type or aspect. It also contains methods for returning the next
 space a player will land on, and for moving him ahead to the next Buyer or
-Dealer space.*/
+Dealer space.*/ 
 
 public class Board {
     

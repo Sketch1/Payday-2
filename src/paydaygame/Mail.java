@@ -14,8 +14,9 @@ public class Mail extends Deck {
     
     int nextCard = 0;
     
-    public Mail() { /*This is the consturctor, which creates the Mail Deck, an 
+    public Mail(Interface i) { /*This is the consturctor, which creates the Mail Deck, an 
         array containing the 47 MailCards, and then shuffles it.*/
+        toInterface = i;
         System.out.println("The Mail Deck has been created!");
         deck = new MailCard[47];
         deck[0] = new MailCard(0, "", true, "Move ahead to the next buyer or dealer space!");

@@ -19,6 +19,7 @@ public class Deck {
     Mail toMailDeck;
     Interface toInterface;
     
+    
     public Deck() {
         /*Deck is not constructed. It is just an idea that other classes refer
         to. I bet there's a name for this...*/
@@ -43,7 +44,7 @@ public class Deck {
             end--; //End of deck reduced to eliminate moving of number just moved.
             }
         System.out.println("The " + deck + " Deck was shuffled!");
-        if (toInterface.devMode == true) {for (int i=0; i < 24; i++) {
+        if (toInterface.devMode) {for (int i=0; i < 24; i++) {
             System.out.println("(DEV MODE) Here's the order:");
             System.out.println(deckOrder[i]);}}
      }

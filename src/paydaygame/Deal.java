@@ -12,8 +12,9 @@ public class Deal extends Deck {
     DealCard deck[];
     int nextCard = 0;
     
-    public Deal() { /*This is the consturctor, which creates the Deal Deck, an 
+    public Deal(Interface i) { /*This is the consturctor, which creates the Deal Deck, an 
         array containing 24 DealCards, and then shuffles it.*/
+        toInterface = i;
         nextCard = 0;
         System.out.println("The Deal Deck has been created!");
         deck = new DealCard[24];
