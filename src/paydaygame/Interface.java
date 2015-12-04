@@ -11,6 +11,7 @@ import java.util.Random;
 
 public class Interface extends javax.swing.JFrame {
     
+    //ToDO: Organize by type
     Mail toMail;
     Player toPlayer[];
     Board toBoard;
@@ -23,6 +24,7 @@ public class Interface extends javax.swing.JFrame {
     int index = 0;
     int jackpot;
     boolean devMode;
+    GameUI toGameUI;
     
     public Interface() {
         initComponents();
@@ -38,6 +40,8 @@ public class Interface extends javax.swing.JFrame {
         toMail = new Mail(this);
         toBoard = new Board();
         toStatWindow = new StatWindow(noOfPlayers, noOfMonths);
+        toGameUI = new GameUI(noOfPlayers, this);
+        toGameUI.runUI();
         System.out.println("Setting up the game...");
         toPlayer = new Player[noOfPlayers];
         for (int index = 0; index < noOfPlayers; index++) {
@@ -225,7 +229,6 @@ public class Interface extends javax.swing.JFrame {
             public void run() {
             new Interface().setVisible(true);
             }
-            
         });
     }
     
