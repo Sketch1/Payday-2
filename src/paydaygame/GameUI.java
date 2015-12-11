@@ -6,15 +6,10 @@ package paydaygame;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.image.BufferedImage;
-//Yes, I know these are unused.
 import java.net.URL;
 import javax.imageio.ImageIO;
-import java.applet.Applet;
-import java.applet.AudioClip;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.event.MouseEvent;
 
 public class GameUI extends JPanel {
     
@@ -22,6 +17,11 @@ public class GameUI extends JPanel {
     Interface toInterface;
     
     private BufferedImage boardImage;
+    private BufferedImage $100;
+    private BufferedImage $500;
+    private BufferedImage $1000;
+    private BufferedImage $5000;
+    private BufferedImage $10000;
     
     public GameUI (int noOfPlayers, Interface i) {
         toJFrame = new JFrame("Payday. The Game. It's Cool.");
@@ -30,8 +30,18 @@ public class GameUI extends JPanel {
         toJFrame.setVisible(true);
         toJFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
         toInterface = i;
+        int index = 0;
         
         URL boardImgUrl = this.getClass().getResource("resources/board.png");
+        URL $100ImgUrl = this.getClass().getResource("resources/$100.jpg");
+        URL $500ImgUrl = this.getClass().getResource("resources/$500.jpg");
+        URL $1000ImgUrl = this.getClass().getResource("resources/$1000.jpg");
+        URL $5000ImgUrl = this.getClass().getResource("resources/$5000.jpg");
+        URL $10000ImgUrl = this.getClass().getResource("resources/$10000.jpg");
+        while (index < 48) {
+            String name = index + "ImgUrl";
+            URL name = this.getClass().getResource("resources/Mail/" + index + ".jpg");
+        }
         
         try {boardImage = ImageIO.read(boardImgUrl);
            }
@@ -56,7 +66,8 @@ public class GameUI extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         g2d.drawImage(boardImage, 5, 150, this);
         g2d.drawLine(700, 0, 700, 1200);
-        int x = 5;
-        int y = 10;
+        g2d.drawLine(0, 145, 1200, 145);
+        g2d.drawLine(0, 860, 1200, 860);
+        
         }
     }

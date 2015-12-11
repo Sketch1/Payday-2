@@ -13,12 +13,13 @@ public class Mail extends Deck {
     MailCard deck[];
     
     int nextCard = 0;
+    int deckSize = 49;
     
     public Mail(Interface i) { /*This is the consturctor, which creates the Mail Deck, an 
         array containing the 47 MailCards, and then shuffles it.*/
         toInterface = i;
         System.out.println("The Mail Deck has been created!");
-        deck = new MailCard[47];
+        deck = new MailCard[deckSize];
         deck[0] = new MailCard(0, "", true, "Move ahead to the next buyer or dealer space!");
         deck[1] = new MailCard(0, "", true, "Move ahead to the next buyer or dealer space!");
         deck[2] = new MailCard(-2000, "pay", false, "Bill");
@@ -42,7 +43,7 @@ public class Mail extends Deck {
         deck[20] = new MailCard(-400, "pay", false, "Charity");
         deck[21] = new MailCard(100, "player", false, "Mad Money");
         deck[22] = new MailCard(0, "", true, "Move ahead to the next buyer or dealer space!");
-        deck[23] = new MailCard(300, "player", false, "Mad Money");
+        deck[23] = new MailCard(1500, "player", false, "Mad Money");
         deck[24] = new MailCard(-200, "pay", false, "Bill");
         deck[25] = new MailCard(0, "", true, "Move ahead to the next buyer or dealer space!");
         deck[26] = new MailCard(-200, "player", false, "Pay A Neighbour");
@@ -66,7 +67,9 @@ public class Mail extends Deck {
         deck[44] = new MailCard(2000, "player", false, "Mad Money");
         deck[45] = new MailCard(-300, "player", false, "Pay A Neighbour");
         deck[46] = new MailCard(-200, "player", false, "Pay A Neighbour");
-        this.shuffle(46, "Mail");      
+        deck[47] = new MailCard(-700, "pay", false, "Bill");
+        deck[48] = new MailCard(2000, "player", false, "Mad Money");
+        this.shuffle(deckSize, "Mail");      
     }
     
     private void cloakingDevice() /*This method allows me to hide
@@ -94,11 +97,11 @@ public class Mail extends Deck {
         mailCards[16] = -300; //To A Neighbour
         mailCards[17] = -5000; //Bill
         mailCards[18] = -500; //Charity: Whale Rescue
-        mailCards[19] = 1000; //From Player Of Your Choice (Made Money)
+        mailCards[19] = 1000; //From Player Of Your Choice (Mad Money)
         mailCards[20] = -400; //Charity: Scholarship Drive
         mailCards[21] = 100; //From Player Of Choice (Mad Money)
         mailCards[22] = 0;
-        mailCards[23] = 300; //From Player Of Choice (Mad Money)
+        mailCards[23] = 1500; //From Player Of Choice (Mad Money)
         mailCards[24] = -200; //Bill
         mailCards[25] = 0;
         mailCards[26] = -200; //To A Neighbour
@@ -121,15 +124,17 @@ public class Mail extends Deck {
         mailCards[43] = -200; //Charity
         mailCards[44] = 2000; //From Player Of Your Choice (Mad Money)
         mailCards[45] = -300; //To A Neighbour
-        mailCards[46] = -200; //To A Neighbour*/  
+        mailCards[46] = -200; //To A Neighbour
+        mailCards[47] = -700; //Bill
+        mailCards[48] = 1500; //Mad Money*/  
     } 
     
     
     public MailCard nextCard() { /*Next card returns the next card within to
         Player, upon request. It also calls for the MailCard returned to describe
         itself in the output.*/
-        if (nextCard == 46) {
-            this.shuffle(46, "Mail");
+        if (nextCard == deckSize) {
+            this.shuffle(deckSize, "Mail");
             nextCard = 0;}
         nextCard++;
         System.out.println("The mail deck has returned a card!");

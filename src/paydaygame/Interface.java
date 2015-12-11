@@ -35,7 +35,7 @@ public class Interface extends javax.swing.JFrame {
         Board and StatWindow. It also contructs the Players, one after another,
         using a for loop to determine how many are to be created. Finally, it 
         runs the game, calling takeYourTurn in player.*/
-        devMode = false;
+        devMode = true;
         toDeal = new Deal(this);
         toMail = new Mail(this);
         toBoard = new Board();

@@ -11,13 +11,14 @@ public class Deal extends Deck {
     
     DealCard deck[];
     int nextCard = 0;
+    int deckSize = 24;
     
     public Deal(Interface i) { /*This is the consturctor, which creates the Deal Deck, an 
         array containing 24 DealCards, and then shuffles it.*/
         toInterface = i;
         nextCard = 0;
         System.out.println("The Deal Deck has been created!");
-        deck = new DealCard[24];
+        deck = new DealCard[deckSize];
         deck[0] = new DealCard(12000, 20000, 0); //Rocketship Internation
         deck[1] = new DealCard(3500, 6500, 1); //Shepherd's Pie Co
         deck[2] = new DealCard(9500, 14000, 2); //Sahara Safari
@@ -42,14 +43,14 @@ public class Deal extends Deck {
         deck[21] = new DealCard(3500, 6000, 21); //Pop's Soda Pop Inc
         deck[22] = new DealCard(2000, 5500, 22); //Wheels 'N' Squeals Skateboards
         deck[23] = new DealCard(7500, 13000, 23); //Laughing Gas Inc
-        this.shuffle(24, "Deal");
+        this.shuffle(deckSize, "Deal");
     }
     
     public DealCard nextCard() { /*Next card returns the next card within to
         Player, upon request. It also calls for the DealCard returned to describe
         itself in the output.*/
-        if (nextCard == 24) {
-            this.shuffle(24, "Deal");
+        if (nextCard == deckSize) {
+            this.shuffle(deckSize, "Deal");
             nextCard = 0;}
         nextCard++;
         System.out.println("The Deal deck has returned a card!");
