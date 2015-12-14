@@ -41,6 +41,7 @@ public class GameUI extends JPanel {
         while (index < 48) {
             String name = index + "ImgUrl";
             URL name = this.getClass().getResource("resources/Mail/" + index + ".jpg");
+            index++;
         }
         
         try {boardImage = ImageIO.read(boardImgUrl);
@@ -67,7 +68,11 @@ public class GameUI extends JPanel {
         g2d.drawImage(boardImage, 5, 150, this);
         g2d.drawLine(700, 0, 700, 1200);
         g2d.drawLine(0, 145, 1200, 145);
-        g2d.drawLine(0, 860, 1200, 860);
-        
+        g2d.drawLine(0, 860, 700, 860);
+        g2d.drawLine(800, 287, 1100, 287);
+        g2d.drawLine(800, 429, 1100, 429);
+        g2d.drawLine(800, 571, 1100, 571);
+        g2d.drawLine(800, 713, 1100, 713);
+        g2d.drawLine(800, 855, 1100, 855);
         }
     }
