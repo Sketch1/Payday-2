@@ -106,7 +106,7 @@ public class DealCard {
                 name = "Laughing Gas Inc";
                 break;
         }
-        System.out.println("He drew '" + name + ".' It costs $" + buyPrice + " and, if sold, will return $" + sellPrice + ".");
+        System.out.println("He drew '" + name + ".' It costs $" + -buyPrice + " and, if sold, will return $" + -sellPrice + ".");
         
     }
     

@@ -35,17 +35,17 @@ public class Interface extends javax.swing.JFrame {
         Board and StatWindow. It also contructs the Players, one after another,
         using a for loop to determine how many are to be created. Finally, it 
         runs the game, calling takeYourTurn in player.*/
-        devMode = true;
+        devMode = false;
         toDeal = new Deal(this);
         toMail = new Mail(this);
         toBoard = new Board();
         toStatWindow = new StatWindow(noOfPlayers, noOfMonths);
-        toGameUI = new GameUI(noOfPlayers, this);
+        toGameUI = new GameUI(noOfPlayers, this, toDeal, toMail);
         toGameUI.runUI();
         System.out.println("Setting up the game...");
         toPlayer = new Player[noOfPlayers];
         for (int index = 0; index < noOfPlayers; index++) {
-            toPlayer[index] = new Player(this, toBoard, index, toMail, toDeal);}
+            toPlayer[index] = new Player(this, toBoard, index, toMail, toDeal, toGameUI);}
         while (!finished) {
             for (int index = 0; index < noOfPlayers; index++) {
                 if(!toPlayer[index].finished) {toPlayer[index].takeYourTurn();}}

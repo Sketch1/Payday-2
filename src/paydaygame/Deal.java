@@ -58,4 +58,8 @@ public class Deal extends Deck {
         return deck[deckOrder[nextCard-1]];
     }
     
+    public int getDeckSize() {
+        return deckSize;
+    }
+    
 }

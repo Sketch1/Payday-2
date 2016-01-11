@@ -15,6 +15,7 @@ public class Player {
     Interface toInterface;
     Board toBoard;
     Mail toMail;
+    GameUI toGameUI;
     int cash = 5000; //Players start with $5000
     int boardPosition = 0; //Players start on the Start Square.
     int month = 1; //Players start in month 1.
@@ -24,7 +25,7 @@ public class Player {
     Deal toDeal;
     LinkedList handOfDealCards;
     
-    public Player(Interface i, Board b, int in, Mail m, Deal d) {
+    public Player(Interface i, Board b, int in, Mail m, Deal d, GameUI g) {
         /*Variables are initialized.*/
         toInterface = i;
         toBoard = b;
@@ -33,15 +34,20 @@ public class Player {
         toDeal = d;
         System.out.println("Player " + ID + " has been created!");
         handOfDealCards = new LinkedList();
+        toGameUI = g;
     }
     
     public void takeYourTurn() { /*The most important method in the game. Since
         it's quite complicated, a walkthrough has been added. This method is 
         called by the loop running in Interface.startGame.*/
+        try {Thread.sleep(1000);}
+            catch (java.lang.InterruptedException i) {System.out.println("BLAM! MENU RUN EXCEPTION!");}
         System.out.println("*************************************************");
         System.out.println("Player " + ID + " has started his turn!");
         System.out.println("At the start of his turn, he had $" + cash);
         int movement = new Random().nextInt(6)+1; //The rolling of the die
+        //The die flashes through several random phases...
+        toGameUI.roll(movement);
         System.out.println("He rolled a " + movement);
         if (movement == 6) {this.adjustBalance(-toInterface.jackpot, false);
             System.out.println("Player " + ID + " rolled a 6! He wins the jackpot, taking home $" + toInterface.jackpot);
@@ -79,7 +85,7 @@ public class Player {
                 toInterface.allPayersPlay(-100, false);
                 Player winnerL = toInterface.getOtherPlayer(-1); //Calls getOtherPlayer in interface, passing -1 to cause any player to be a possible return.
                 System.out.println("Player " + winnerL.ID + " has won the lottery!");
-                System.out.println("He recives a total of $" + (1000+(100*toInterface.noOfPlayers)));
+                System.out.println("He recives a total of $" + -(1000+(100*toInterface.noOfPlayers)));
                 winnerL.adjustBalance(-1000-(100*toInterface.noOfPlayers), false);
                 break;
             case "Pay": //Called by several squares, this causes the simple reduction of a Player's money.
@@ -100,7 +106,7 @@ public class Player {
             case "Birthday": //The player gets $100 from each other player.
                 System.out.println("It's Player " + ID + "'s Birthday!");
                 //cash = cash + toInterface.noOfPlayers*100;/*+ number of players playing x 100*/;
-                System.out.println("He collected $100 from each player, bringing his total takings to " + toInterface.noOfPlayers*100);
+                System.out.println("He collected $100 from each player, bringing his total takings to " + -toInterface.noOfPlayers*100);
                 this.adjustBalance(toInterface.noOfPlayers*-100, false);
                 toInterface.allPayersPlay(toInterface.noOfPlayers*-100, false);
                 break;
