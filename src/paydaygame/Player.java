@@ -25,7 +25,7 @@ public class Player {
     Deal toDeal;
     LinkedList handOfDealCards;
     
-    public Player(Interface i, Board b, int in, Mail m, Deal d, GameUI g) {
+    public Player(Interface i, Board b, int in, Mail m, Deal d) {
         /*Variables are initialized.*/
         toInterface = i;
         toBoard = b;
@@ -34,34 +34,43 @@ public class Player {
         toDeal = d;
         System.out.println("Player " + ID + " has been created!");
         handOfDealCards = new LinkedList();
-        toGameUI = g;
+        
     }
     
     public void takeYourTurn() { /*The most important method in the game. Since
         it's quite complicated, a walkthrough has been added. This method is 
         called by the loop running in Interface.startGame.*/
-        try {Thread.sleep(1000);}
-            catch (java.lang.InterruptedException i) {System.out.println("BLAM! MENU RUN EXCEPTION!");}
+        this.sleep(1000);
         System.out.println("*************************************************");
         System.out.println("Player " + ID + " has started his turn!");
+        this.sleep(1000);
         System.out.println("At the start of his turn, he had $" + cash);
+        this.sleep(1000);
         int movement = new Random().nextInt(6)+1; //The rolling of the die
         //The die flashes through several random phases...
+        System.out.println("Player " + ID + " picks up the die! He readys it, then dramatically throws it to the board!");
+        this.sleep(1000);
         toGameUI.roll(movement);
+        this.sleep(1000);
         System.out.println("He rolled a " + movement);
+        this.sleep(1000);
         if (movement == 6) {this.adjustBalance(-toInterface.jackpot, false);
             System.out.println("Player " + ID + " rolled a 6! He wins the jackpot, taking home $" + toInterface.jackpot);
+            this.sleep(1000);
             toInterface.jackpot = 0;}
         if (boardPosition + movement >= 31) {boardPosition = 31;}
         else {boardPosition = boardPosition + movement;} /*Determines whether 
-        this move will take the player beyond 31, where every playuer must stop. Then, moves.*/
+        this move will take the player beyond 31, where every player must stop. Then, moves.*/
         System.out.println("He moves to space " + boardPosition);
+        this.sleep(1000);
         String thingWeDo = toBoard.getResult(boardPosition); //Queries Board for the action to be taken on this space.
         System.out.println("He's landed on " + thingWeDo + "!");
+        this.sleep(1000);
         switch (thingWeDo) { //Does something based on what is returned by Board
             case "Mail": //Draws cards from the Mail deck, running doMailCard each time.
                 int noOfCards = toBoard.additionalData[boardPosition];
                 System.out.println("Player " + ID + " draws " + noOfCards + " Mail Cards!");
+                this.sleep(1000);
                 for (int index = 1; index <= noOfCards; index++) {
                     MailCard card = toMail.nextCard();
                     this.doMailCard(card);
@@ -234,6 +243,19 @@ public class Player {
     
     public int getCash() {
         return cash;
+    }
+    
+    public int getBoardPosition() {
+        return boardPosition;
+    }
+    
+    public void sleep (int time) {
+        try {Thread.sleep(time);}
+            catch (java.lang.InterruptedException i) {System.out.println("BLAM! SLEEP EXCEPTION #1!");}
+    }
+    
+    public void setGameUI(GameUI g) {
+        toGameUI = g;
     }
     
 }

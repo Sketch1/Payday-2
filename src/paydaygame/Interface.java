@@ -11,20 +11,20 @@ import java.util.Random;
 
 public class Interface extends javax.swing.JFrame {
     
-    //ToDO: Organize by type
     Mail toMail;
     Player toPlayer[];
     Board toBoard;
-    int noOfPlayers;
-    int noOfMonths;
-    boolean finished;
     Deal toDeal;
     Interface interface1;
     StatWindow toStatWindow;
+    GameUI toGameUI;
+    UIThread toUIThread;
     int index = 0;
     int jackpot;
+    int noOfPlayers;
+    int noOfMonths;
     boolean devMode;
-    GameUI toGameUI;
+    boolean finished;
     
     public Interface() {
         initComponents();
@@ -35,17 +35,26 @@ public class Interface extends javax.swing.JFrame {
         Board and StatWindow. It also contructs the Players, one after another,
         using a for loop to determine how many are to be created. Finally, it 
         runs the game, calling takeYourTurn in player.*/
-        devMode = false;
+        devMode = true;
         toDeal = new Deal(this);
         toMail = new Mail(this);
         toBoard = new Board();
         toStatWindow = new StatWindow(noOfPlayers, noOfMonths);
-        toGameUI = new GameUI(noOfPlayers, this, toDeal, toMail);
-        toGameUI.runUI();
+       
         System.out.println("Setting up the game...");
+        
         toPlayer = new Player[noOfPlayers];
         for (int index = 0; index < noOfPlayers; index++) {
-            toPlayer[index] = new Player(this, toBoard, index, toMail, toDeal, toGameUI);}
+            toPlayer[index] = new Player(this, toBoard, index, toMail, toDeal);
+        }        
+        toGameUI = new GameUI(noOfPlayers, this, toDeal, toMail, toBoard);
+        for (int index = 0; index < noOfPlayers; index++) {
+            toPlayer[index].setGameUI(toGameUI);
+        }
+        toUIThread = new UIThread();
+        toUIThread.update(this, toGameUI);
+        toUIThread.start();
+        
         while (!finished) {
             for (int index = 0; index < noOfPlayers; index++) {
                 if(!toPlayer[index].finished) {toPlayer[index].takeYourTurn();}}
@@ -271,6 +280,11 @@ public class Interface extends javax.swing.JFrame {
     public void printCash(int cash, int callingPlayerMonth, int callingPlayer) {
         /*This method prints out a Player's current cash into the stats window.*/
         toStatWindow.setValueAt("$"+cash, callingPlayerMonth, callingPlayer);
+    }
+    
+    public Player getPlayer(int ID) {
+        if (devMode) {System.out.println("getPlayer called with ID " + ID);}
+        return toPlayer[ID];
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

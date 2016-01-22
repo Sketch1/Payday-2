@@ -19,10 +19,13 @@ public class GameUI extends JPanel {
     Interface toInterface;
     Deal toDeal;
     Mail toMail;
+    Player toPlayer[];
+    Board toBoard;
     
     int mailDeckSize;
     int dealDeckSize;
     
+    //Creates Image Variables And Arrays
     private BufferedImage boardImage;
     private BufferedImage $100;
     private BufferedImage $500;
@@ -36,26 +39,39 @@ public class GameUI extends JPanel {
     private BufferedImage dieFaces[];
     private BufferedImage counters[];
     int currentDie;
+    int squareX[];
+    int squareY[];
+    int counterXs[];
+    int counterYs[];
+    int noOfPlayers;
     
-    public GameUI (int noOfPlayers, Interface i, Deal d, Mail m) {
+    public GameUI (int nOP, Interface i, Deal d, Mail m, Board b) {
+        //Creates URL Arrays
         URL dealCardURLs[];
         URL mailCardURLs[];
         URL dieFaceURLs[];
         URL counterURLs[];
         
+        //Creates JFrame
         toJFrame = new JFrame("Payday. The Game. It's Cool.");
         toJFrame.add(this);
         toJFrame.setSize(1200, 1000);
         toJFrame.setVisible(true);
         toJFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
+        //Class Pointer Declaration
         toInterface = i;
         toDeal = d;
         toMail = m;
+        toPlayer = new Player[6];
+        toBoard = b;
+        noOfPlayers = nOP;
         
+        //Array Size Variable Declaration
         mailDeckSize = toMail.getDeckSize();
         dealDeckSize = toDeal.getDeckSize();
         
+        //Array Size Declaration. It's like customs around here.
         dealCardImgs = new BufferedImage[dealDeckSize];
         dealCardURLs = new URL[dealDeckSize];
         mailCardImgs = new BufferedImage[mailDeckSize];
@@ -64,7 +80,13 @@ public class GameUI extends JPanel {
         dieFaceURLs = new URL[7];
         counters = new BufferedImage[6];
         counterURLs = new URL[6];
+        counterXs = new int[6];
+        counterYs = new int[6];
+        squareX = new int[32];
+        squareY = new int [32];
         
+        
+        //URL Path Declaration
         URL boardImgUrl = this.getClass().getResource("resources/board.png");
         URL $100ImgUrl = this.getClass().getResource("resources/$100.jpg");
         URL $500ImgUrl = this.getClass().getResource("resources/$500.jpg");
@@ -74,6 +96,7 @@ public class GameUI extends JPanel {
         URL dealBackImgURL = this.getClass().getResource("resources/Deal/Back.jpg");
         URL mailBackImgURL = this.getClass().getResource("resources/Mail/Back.jpg");
         
+        //Repeat for arrays.
         for (int index = 0; index < dealDeckSize; index++) {
             dealCardURLs[index] = this.getClass().getResource("resources/Deal/" + index + ".jpg");
         }
@@ -90,6 +113,16 @@ public class GameUI extends JPanel {
             counterURLs[index] = this.getClass().getResource("resources/Counter" + index + ".png");
         }
         
+        for (int index = 0; index < noOfPlayers; index++) {
+            toPlayer[index] = toInterface.getPlayer(index);
+        }
+        
+        for (int index = 0; index < 32; index++) {
+            squareX[index] = toBoard.getSquareX(index);
+            squareY[index] = toBoard.getSquareY(index);
+        }
+        
+        //Image IO Read
         try {
             boardImage = ImageIO.read(boardImgUrl);
             $100 = ImageIO.read($100ImgUrl);
@@ -118,23 +151,27 @@ public class GameUI extends JPanel {
             currentDie = 0;
            }
         catch (java.io.IOException e) {System.out.println("BLAM! IO EXCEPTION!");}
-    }
-    
-    public void runUI() {
-        while (toInterface.finished) {
-            this.refresh();
-            this.repaint();
-            /*try {Thread.sleep(10);}
-            catch (java.lang.InterruptedException i) {System.out.println("BLAM! MENU RUN EXCEPTION!");}*/
-        }
+        
+        //Counter Offsets (From Upper Left Corner) Location Declaration
+        counterXs[0] = 3;
+        counterYs[0] = 3;
+        counterXs[1] = 43;
+        counterYs[1] = -2;
+        counterXs[2] = 0;
+        counterYs[2] = 31;
+        counterXs[3] = 46;
+        counterYs[3] = 25;
+        counterXs[4] = 3;
+        counterYs[4] = 58;
+        counterXs[5] = 43;
+        counterYs[5] = 53; 
     }
     
     public void refresh() {
         //All that refresh does is change the coords of things that are drawn in paint.
         } 
     
-    @Override
-    public void paint (Graphics g) {
+    public void render (Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
         g2d.drawImage(boardImage, 5, 150, this);
         g2d.drawLine(700, 0, 700, 1200);
@@ -170,12 +207,16 @@ public class GameUI extends JPanel {
         g2d.drawImage(dieFaces[currentDie], 725, 10, (int)dieScaled.getX()+725, (int)dieScaled.getY()+10, 0, 0, dieFaces[0].getWidth(), dieFaces[0].getHeight(), this);
         
         Point counterScaled = this.scale(10, counters[0].getWidth(), counters[0].getHeight()); //This will work for all counters.
-        g2d.drawImage(counters[0], 60, 355, (int)counterScaled.getX()+60, (int)counterScaled.getY()+355, 0, 0, counters[0].getWidth(), counters[0].getHeight(), this);
-        g2d.drawImage(counters[1], 100, 350, (int)counterScaled.getX()+100, (int)counterScaled.getY()+350, 0, 0, counters[0].getWidth(), counters[0].getHeight(), this);
-        g2d.drawImage(counters[4], 60, 410, (int)counterScaled.getX()+60, (int)counterScaled.getY()+410, 0, 0, counters[0].getWidth(), counters[0].getHeight(), this);
-        g2d.drawImage(counters[5], 100, 405, (int)counterScaled.getX()+100, (int)counterScaled.getY()+405, 0, 0, counters[0].getWidth(), counters[0].getHeight(), this);
-        g2d.drawImage(counters[2], 57, 383, (int)counterScaled.getX()+57, (int)counterScaled.getY()+383, 0, 0, counters[0].getWidth(), counters[0].getHeight(), this);
-        g2d.drawImage(counters[3], 103, 377, (int)counterScaled.getX()+103, (int)counterScaled.getY()+377, 0, 0, counters[0].getWidth(), counters[0].getHeight(), this);
+        for (int index = 0; index < noOfPlayers; index++) {
+            int boardPosition = toPlayer[index].getBoardPosition();
+            if (toInterface.devMode) {System.out.println("Player " + index + " is on square " + boardPosition);}
+            g2d.drawImage(counters[index], squareX[boardPosition]+counterXs[index], squareY[boardPosition]+counterYs[index], (int)counterScaled.getX()+squareX[boardPosition]+counterXs[index],(int)counterScaled.getY()+squareY[boardPosition]+counterYs[index], 0, 0, counters[index].getWidth(), counters[index].getHeight(), this);
+        }
+    }
+    
+    @Override
+    public void paint (Graphics g) {
+        this.render(g);
         }
     
     public Point animatedLocation (int x1, int y1, int x2, int y2, int percentage) {
@@ -202,13 +243,15 @@ public class GameUI extends JPanel {
     
     public void roll (int i) {
         int randomFace;
-        for (int index = 0; index < 30/*With a sleep, this could be less*/; index++) {
+        for (int index = 0; index < 3000; index++) {
         randomFace = new Random().nextInt(6)+1; 
         currentDie = randomFace;
-        /*try {Thread.sleep(1);}
-        catch (java.lang.InterruptedException blam) {System.out.println("BLAM! ROLL EXCEPTION!");}*/
         }
         currentDie = i;
+    }
+    
+    public void moveCounter (int sub, int X, int Y) {
+        
     }
     
    }
