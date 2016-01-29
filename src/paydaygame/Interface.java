@@ -35,30 +35,28 @@ public class Interface extends javax.swing.JFrame {
         Board and StatWindow. It also contructs the Players, one after another,
         using a for loop to determine how many are to be created. Finally, it 
         runs the game, calling takeYourTurn in player.*/
-        devMode = true;
+        devMode = false;
         toDeal = new Deal(this);
         toMail = new Mail(this);
         toBoard = new Board();
         toStatWindow = new StatWindow(noOfPlayers, noOfMonths);
-       
-        System.out.println("Setting up the game...");
-        
+        System.out.println("Setting up the game..."); 
         toPlayer = new Player[noOfPlayers];
         for (int index = 0; index < noOfPlayers; index++) {
             toPlayer[index] = new Player(this, toBoard, index, toMail, toDeal);
-        }        
+            }        
         toGameUI = new GameUI(noOfPlayers, this, toDeal, toMail, toBoard);
         for (int index = 0; index < noOfPlayers; index++) {
             toPlayer[index].setGameUI(toGameUI);
-        }
+            }
         toUIThread = new UIThread();
         toUIThread.update(this, toGameUI);
         toUIThread.start();
-        
+        this.passString("Setting up the game");
         while (!finished) {
             for (int index = 0; index < noOfPlayers; index++) {
                 if(!toPlayer[index].finished) {toPlayer[index].takeYourTurn();}}
-        }
+            }
         index++; 
         jackpot = 0;
     }
@@ -123,7 +121,7 @@ public class Interface extends javax.swing.JFrame {
 
         lable1.setText("Payday");
 
-        noOfPlayersField.setText("4");
+        noOfPlayersField.setText("6");
         noOfPlayersField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 noOfPlayersFieldActionPerformed(evt);
@@ -285,6 +283,10 @@ public class Interface extends javax.swing.JFrame {
     public Player getPlayer(int ID) {
         if (devMode) {System.out.println("getPlayer called with ID " + ID);}
         return toPlayer[ID];
+    }
+    
+    public void passString(String s) {
+        toGameUI.setCurrentOutput(s);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

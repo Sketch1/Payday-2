@@ -66,7 +66,6 @@ public class Board {
        theBoard[29] = "Buyer";
        theBoard[30] = "WalkForChar";
        theBoard[31] = "Payday";  
-       
        squareX = new int[32];
        squareY = new int [32];
        this.initiateSquareLocations();

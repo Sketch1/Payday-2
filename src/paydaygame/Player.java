@@ -24,6 +24,7 @@ public class Player {
     boolean finished = false; //To finish, you must first play!
     Deal toDeal;
     LinkedList handOfDealCards;
+    boolean moving;
     
     public Player(Interface i, Board b, int in, Mail m, Deal d) {
         /*Variables are initialized.*/
@@ -34,6 +35,7 @@ public class Player {
         toDeal = d;
         System.out.println("Player " + ID + " has been created!");
         handOfDealCards = new LinkedList();
+        moving = false;
         
     }
     
@@ -42,9 +44,9 @@ public class Player {
         called by the loop running in Interface.startGame.*/
         this.sleep(1000);
         System.out.println("*************************************************");
-        System.out.println("Player " + ID + " has started his turn!");
+        toInterface.passString("Player " + ID + " has started his turn!");
         this.sleep(1000);
-        System.out.println("At the start of his turn, he had $" + cash);
+        toInterface.passString("At the start of his turn, he had $" + cash);
         this.sleep(1000);
         int movement = new Random().nextInt(6)+1; //The rolling of the die
         //The die flashes through several random phases...
@@ -59,8 +61,9 @@ public class Player {
             this.sleep(1000);
             toInterface.jackpot = 0;}
         if (boardPosition + movement >= 31) {boardPosition = 31;}
-        else {boardPosition = boardPosition + movement;} /*Determines whether 
+        else {boardPosition = boardPosition + movement;}/*Determines whether 
         this move will take the player beyond 31, where every player must stop. Then, moves.*/
+        toGameUI.moveCounter(ID, boardPosition);
         System.out.println("He moves to space " + boardPosition);
         this.sleep(1000);
         String thingWeDo = toBoard.getResult(boardPosition); //Queries Board for the action to be taken on this space.

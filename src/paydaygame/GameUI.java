@@ -3,6 +3,7 @@
  */
 package paydaygame;
 
+import java.awt.Color;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.image.BufferedImage;
@@ -41,9 +42,18 @@ public class GameUI extends JPanel {
     int currentDie;
     int squareX[];
     int squareY[];
-    int counterXs[];
-    int counterYs[];
+    int counterXOffset[];
+    int counterYOffset[];
     int noOfPlayers;
+    int counterXStarting[];
+    int counterYStarting[];
+    int counterXCurrent[];
+    int counterYCurrent[];
+    int counterXGoal[];
+    int counterYGoal[];
+    boolean counterMoving[];
+    int counterMovementPercentage[];
+    String currentOutput;
     
     public GameUI (int nOP, Interface i, Deal d, Mail m, Board b) {
         //Creates URL Arrays
@@ -80,11 +90,32 @@ public class GameUI extends JPanel {
         dieFaceURLs = new URL[7];
         counters = new BufferedImage[6];
         counterURLs = new URL[6];
-        counterXs = new int[6];
-        counterYs = new int[6];
+        counterXOffset = new int[6];
+        counterYOffset = new int[6];
         squareX = new int[32];
         squareY = new int [32];
+        counterXStarting = new int [6];
+        counterYStarting = new int [6];
+        counterXCurrent = new int [6];
+        counterYCurrent = new int [6];
+        counterXGoal = new int [6];
+        counterYGoal = new int [6];
+        counterMoving = new boolean [6];
+        counterMovementPercentage = new int [6];
         
+        //Counter Offsets (From Upper Left Corner) Location Declaration
+        counterXOffset[0] = 3;
+        counterYOffset[0] = 3;
+        counterXOffset[1] = 43;
+        counterYOffset[1] = -2;
+        counterXOffset[2] = 0;
+        counterYOffset[2] = 31;
+        counterXOffset[3] = 46;
+        counterYOffset[3] = 25;
+        counterXOffset[4] = 3;
+        counterYOffset[4] = 58;
+        counterXOffset[5] = 43;
+        counterYOffset[5] = 53;
         
         //URL Path Declaration
         URL boardImgUrl = this.getClass().getResource("resources/board.png");
@@ -113,14 +144,22 @@ public class GameUI extends JPanel {
             counterURLs[index] = this.getClass().getResource("resources/Counter" + index + ".png");
         }
         
-        for (int index = 0; index < noOfPlayers; index++) {
-            toPlayer[index] = toInterface.getPlayer(index);
-        }
-        
         for (int index = 0; index < 32; index++) {
             squareX[index] = toBoard.getSquareX(index);
             squareY[index] = toBoard.getSquareY(index);
         }
+        
+        for (int index = 0; index < noOfPlayers; index++) {
+            toPlayer[index] = toInterface.getPlayer(index);
+            counterMoving[index] = false;
+            counterMovementPercentage[index] = 0;
+            counterXStarting[index] = squareX[0]+counterXOffset[index]; counterYStarting[index] = squareY[0]+counterYOffset[index];
+            counterXCurrent[index] = counterXStarting[index]; counterYCurrent[index] = counterYStarting[index];
+            counterXGoal[index] = counterXStarting[index]; counterYGoal[index] = counterYStarting[index];
+        }
+        
+        counterMoving[0] = true;
+        
         
         //Image IO Read
         try {
@@ -151,29 +190,31 @@ public class GameUI extends JPanel {
             currentDie = 0;
            }
         catch (java.io.IOException e) {System.out.println("BLAM! IO EXCEPTION!");}
-        
-        //Counter Offsets (From Upper Left Corner) Location Declaration
-        counterXs[0] = 3;
-        counterYs[0] = 3;
-        counterXs[1] = 43;
-        counterYs[1] = -2;
-        counterXs[2] = 0;
-        counterYs[2] = 31;
-        counterXs[3] = 46;
-        counterYs[3] = 25;
-        counterXs[4] = 3;
-        counterYs[4] = 58;
-        counterXs[5] = 43;
-        counterYs[5] = 53; 
+       
     }
     
-    public void refresh() {
-        //All that refresh does is change the coords of things that are drawn in paint.
-        } 
+    public void refresh(Graphics g) {
+        //All that refresh does is change the coords of things that are drawn in render.
+        for (int index = 0; index < 6; index++) {
+            if (counterMoving[index]) {
+                counterMovementPercentage[index] = counterMovementPercentage[index] + 1; //Adjust this number to change how fast the counters move.
+                Point tempPoint = animatedLocation2(counterXStarting[index], counterYStarting[index], counterXGoal[index], counterYGoal[index], counterMovementPercentage[index]);
+                counterXCurrent[index] = tempPoint.x; counterYCurrent[index] = tempPoint.y;
+                this.render(g);
+                if (counterMovementPercentage[index] == 100) {
+                    counterMovementPercentage[index] = 0;
+                    counterMoving[index] = false;
+                }
+            }
+        }
+    } 
     
     public void render (Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
-        g2d.drawImage(boardImage, 5, 150, this);
+        g2d.setColor(Color.white);
+        g2d.fillRect(0, 870, 699, 20);
+        g2d.setColor(Color.black);
+        g2d.drawString(currentOutput, 0, 880);
         g2d.drawLine(700, 0, 700, 1200);
         g2d.drawLine(0, 145, 1200, 145);
         g2d.drawLine(0, 860, 700, 860);
@@ -206,11 +247,12 @@ public class GameUI extends JPanel {
         Point dieScaled = this.scale(17, dieFaces[0].getWidth(), dieFaces[0].getHeight()); //This will work for all dice.
         g2d.drawImage(dieFaces[currentDie], 725, 10, (int)dieScaled.getX()+725, (int)dieScaled.getY()+10, 0, 0, dieFaces[0].getWidth(), dieFaces[0].getHeight(), this);
         
+        g2d.drawImage(boardImage, 5, 150, this); //Placing the board paint here seems to solve the fickering of the counters.
+        
         Point counterScaled = this.scale(10, counters[0].getWidth(), counters[0].getHeight()); //This will work for all counters.
         for (int index = 0; index < noOfPlayers; index++) {
-            int boardPosition = toPlayer[index].getBoardPosition();
-            if (toInterface.devMode) {System.out.println("Player " + index + " is on square " + boardPosition);}
-            g2d.drawImage(counters[index], squareX[boardPosition]+counterXs[index], squareY[boardPosition]+counterYs[index], (int)counterScaled.getX()+squareX[boardPosition]+counterXs[index],(int)counterScaled.getY()+squareY[boardPosition]+counterYs[index], 0, 0, counters[index].getWidth(), counters[index].getHeight(), this);
+            g2d.drawImage(counters[index], counterXCurrent[index], counterYCurrent[index], (int)counterScaled.getX()+counterXCurrent[index], (int)counterScaled.getY()+counterYCurrent[index], 0, 0, counters[index].getWidth(), counters[index].getHeight(), this);
+            //g2d.drawImage(counters[index], squareX[boardPosition]+counterXOffset[index], squareY[boardPosition]+counterYOffset[index], (int)counterScaled.getX()+squareX[boardPosition]+counterXOffset[index],(int)counterScaled.getY()+squareY[boardPosition]+counterYOffset[index], 0, 0, counters[index].getWidth(), counters[index].getHeight(), this);
         }
     }
     
@@ -232,7 +274,24 @@ public class GameUI extends JPanel {
         thePoint.setLocation( (x2 - x1) * adjustedPercentage / 100.0 + x1, (y2 - y1) * adjustedPercentage / 100.0 + y1 );
         //System.out.println("At " + percentage + "% of the way from (" + x1 + ", " + y1 + ") to (" + x2 + ", " + y2 + ") we are at (" + thePoint.getX() )", " + thePoint.getY() + ")."); //DEBUG
         return thePoint;
-        }
+        } 
+    
+    public Point animatedLocation2 (int x1, int y1, int x2, int y2, int percentage) {
+        /*given an object moving from point x1, y1, to point x2, y2, determine its location when it is <percentage> of the way along assuming a falling speed profile (fast--slow)*/
+        Point thePoint = new Point(0,0);
+        double doublePercentage = percentage; // float the percentage
+        double scaledPercentage = doublePercentage/100.0; //scale percentage to between 0 and 1
+        //double shiftedPercentage = scaledPercentage - 1; 
+        //shift the percentage to be between -1 and +1
+        double adjustedPercentage1 = Math.sqrt(scaledPercentage); //Take the square root; this gives result between 0 and 1
+        double adjustedPercentage = 100.0 * adjustedPercentage1; //scale result to between 0 to 100
+        //System.out.println("percentage " + percentage + " adjusted to " + adjustedPercentage); //DEBUG
+        // construct a Point that is adjustedPercentage along the way from (x1, y1) to (x2, y2)
+        thePoint.setLocation( (x2 - x1) * adjustedPercentage / 100.0 + x1, (y2 - y1) * adjustedPercentage / 100.0 + y1 );
+        //System.out.println("At " + percentage + "% of the way from (" + x1 + ", " + y1 + ") to (" + x2 + ", " + y2 + ") we are at (" + thePoint.getX() + ", " + thePoint.getY() + ")."); //DEBUG
+        return thePoint;
+
+    }
     
     public Point scale (int reductionFactor/*A percentage*/, int originalSizeX, int originalSizeY) {
         int finalX = originalSizeX * reductionFactor / 100;
@@ -250,10 +309,16 @@ public class GameUI extends JPanel {
         currentDie = i;
     }
     
-    public void moveCounter (int sub, int X, int Y) {
-        
+    public void moveCounter (int callerID, int endingSquare) { //Player will call this method.
+        counterXStarting[callerID] = counterXGoal[callerID]; counterYStarting[callerID] = counterYGoal[callerID];
+        counterXGoal[callerID] = squareX[endingSquare]+counterXOffset[callerID]; counterYGoal[callerID] = squareY[endingSquare]+counterYOffset[callerID]; 
+        counterXCurrent[callerID] = counterXStarting[callerID]; counterYCurrent[callerID] = counterYStarting[callerID];
+        counterMoving[callerID] = true;
+    }
+    
+    public void setCurrentOutput(String s) {
+        currentOutput = s;
+        System.out.println(s);
     }
     
    }
-
-

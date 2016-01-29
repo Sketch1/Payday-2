@@ -19,12 +19,12 @@ public class UIThread extends Thread {
     public void run() {
         System.out.println("RunUI: 'Called!'");
         while (!toInterface.finished) {
-            toGameUI.refresh();
-            toGameUI.repaint();
             Graphics myGraphics = toGameUI.getGraphics();
-            toGameUI.render(myGraphics);
+            toGameUI.refresh(myGraphics);
+            //toGameUI.render(myGraphics);
+            //toGameUI.repaint();
             if (toInterface.devMode) {System.out.println("Repainted.");}
-            try {Thread.sleep(1000);}
+            try {Thread.sleep(25);}
             catch (java.lang.InterruptedException error) {System.out.println("BLAM! MENU RUN EXCEPTION!");}
         }
     }   
