@@ -49,6 +49,8 @@ public class Interface extends javax.swing.JFrame {
         for (int index = 0; index < noOfPlayers; index++) {
             toPlayer[index].setGameUI(toGameUI);
             }
+        toDeal.updateCards(this);
+        toMail.updateCards(this);
         toUIThread = new UIThread();
         toUIThread.update(this, toGameUI);
         toUIThread.start();
@@ -250,21 +252,21 @@ public class Interface extends javax.swing.JFrame {
         and finishes, whether that was the last Player to finish. If it was, it
         starts the sequince of choosing the winner, and printing out statistics
         (which it doesn't do yet).*/
-        System.out.println("Checking to see if all players are finished...");
+        this.passString("Checking to see if all players are finished...");
         for (int index = 0; index < noOfPlayers; index++) {
             if (!toPlayer[index].getFinished()) {
                 return;
             }
         }
         finished = true;
-        System.out.println("The game has ended!");
+        this.passString("The game has ended!");
         int highestCash = -50000000;
         int mostWealthyPlayer = -1;
         for (int index = 0; index < noOfPlayers; index++) {
             int h = toPlayer[index].getCash();
             if (h > highestCash) {highestCash = h; mostWealthyPlayer = index;}                        
         }
-        System.out.println("The Winner Was Player " + mostWealthyPlayer + " with $" + highestCash);
+        this.passString("The Winner Was Player " + mostWealthyPlayer + " with $" + highestCash);
         return;
         //TODO The reporting of stats and the showing of awesome crap
     }
@@ -281,7 +283,7 @@ public class Interface extends javax.swing.JFrame {
     }
     
     public Player getPlayer(int ID) {
-        if (devMode) {System.out.println("getPlayer called with ID " + ID);}
+        if (devMode) {this.passString("getPlayer called with ID " + ID);}
         return toPlayer[ID];
     }
     

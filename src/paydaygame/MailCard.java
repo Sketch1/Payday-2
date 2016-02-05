@@ -14,6 +14,7 @@ public class MailCard {
     String toWhom;
     boolean move;
     String name;
+    Interface toInterface;
     
     public MailCard(int a, String t, boolean m, String passedName) {
         /*Constuctor initiallizes class with passed peramiters.*/
@@ -54,7 +55,12 @@ public class MailCard {
                 System.out.println("This is a lot of money ($" + -amount + "!) from another player! Yeah!");
                 break;
             case "Pay A Neighbour":
-                System.out.println("This is a bill from another player demanding $" + -amount + "! The cad!");
+                toInterface.passString("This is a bill from another player demanding $" + -amount + "! The cad!");
+                //Danger, danger! toInterface does not exist in this class, hence, no print!
         }
+    }
+    
+    public void update (Interface i) {
+        toInterface = i;
     }
 }

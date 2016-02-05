@@ -13,6 +13,7 @@ public class DealCard {
      int sellPrice;
      int ID;
      String name;
+     Interface toInterface;
     
     public DealCard(int c, int s, int n) { /*Constuctor initiallizes class with 
         passed peramiters.*/
@@ -106,8 +107,13 @@ public class DealCard {
                 name = "Laughing Gas Inc";
                 break;
         }
-        System.out.println("He drew '" + name + ".' It costs $" + -buyPrice + " and, if sold, will return $" + -sellPrice + ".");
+        toInterface.passString("He drew '" + name + ".' It costs $" + -buyPrice + " and, if sold, will return $" + -sellPrice + ".");
+        //Danger, danger! toInterface does not exist in this class, hence, no print!
         
+    }
+    
+    public void update (Interface i) {
+        toInterface = i;
     }
     
 }

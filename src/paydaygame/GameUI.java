@@ -54,6 +54,7 @@ public class GameUI extends JPanel {
     boolean counterMoving[];
     int counterMovementPercentage[];
     String currentOutput;
+    boolean textJustPainted;
     
     public GameUI (int nOP, Interface i, Deal d, Mail m, Board b) {
         //Creates URL Arrays
@@ -76,6 +77,7 @@ public class GameUI extends JPanel {
         toPlayer = new Player[6];
         toBoard = b;
         noOfPlayers = nOP;
+        textJustPainted = true;
         
         //Array Size Variable Declaration
         mailDeckSize = toMail.getDeckSize();
@@ -156,10 +158,7 @@ public class GameUI extends JPanel {
             counterXStarting[index] = squareX[0]+counterXOffset[index]; counterYStarting[index] = squareY[0]+counterYOffset[index];
             counterXCurrent[index] = counterXStarting[index]; counterYCurrent[index] = counterYStarting[index];
             counterXGoal[index] = counterXStarting[index]; counterYGoal[index] = counterYStarting[index];
-        }
-        
-        counterMoving[0] = true;
-        
+            }
         
         //Image IO Read
         try {
@@ -201,20 +200,24 @@ public class GameUI extends JPanel {
                 Point tempPoint = animatedLocation2(counterXStarting[index], counterYStarting[index], counterXGoal[index], counterYGoal[index], counterMovementPercentage[index]);
                 counterXCurrent[index] = tempPoint.x; counterYCurrent[index] = tempPoint.y;
                 this.render(g);
-                if (counterMovementPercentage[index] == 100) {
+                if (counterMovementPercentage[index] >= 100) {
                     counterMovementPercentage[index] = 0;
                     counterMoving[index] = false;
                 }
             }
+        }
+        if (textJustPainted) {
+            textJustPainted = false;
+            this.render(g);
         }
     } 
     
     public void render (Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(Color.white);
-        g2d.fillRect(0, 870, 699, 20);
+        g2d.fillRect(0, 870, 699, 20);//Creating a white retangle which lets the text appear nicely.
         g2d.setColor(Color.black);
-        g2d.drawString(currentOutput, 0, 880);
+        g2d.drawString(currentOutput, 0, 880); //Some bad flicker here
         g2d.drawLine(700, 0, 700, 1200);
         g2d.drawLine(0, 145, 1200, 145);
         g2d.drawLine(0, 860, 700, 860);
@@ -319,6 +322,7 @@ public class GameUI extends JPanel {
     public void setCurrentOutput(String s) {
         currentOutput = s;
         System.out.println(s);
+        textJustPainted = true;
     }
     
    }

@@ -53,13 +53,19 @@ public class Deal extends Deck {
             this.shuffle(deckSize, "Deal");
             nextCard = 0;}
         nextCard++;
-        System.out.println("The Deal deck has returned a card!");
+        toInterface.passString("The Deal deck has returned a card!");
         deck[deckOrder[nextCard-1]].describeYourself();
         return deck[deckOrder[nextCard-1]];
     }
     
     public int getDeckSize() {
         return deckSize;
+    }
+    
+    public void updateCards(Interface i) {
+        for (int index = 0; index < deckSize; index++) {
+            deck[index].update(i);
+        }
     }
     
 }

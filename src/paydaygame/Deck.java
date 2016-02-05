@@ -18,6 +18,7 @@ public class Deck {
     Deal toDealDeck;
     Mail toMailDeck;
     Interface toInterface;
+    int shuffles = 0;
     
     
     public Deck() {
@@ -43,10 +44,11 @@ public class Deck {
             deckOrder[end] = temp; //Other number placed at end of deck.
             end--; //End of deck reduced to eliminate moving of number just moved.
             }
-        System.out.println("The " + deck + " Deck was shuffled!");
+        if(shuffles > 1) {toInterface.passString("The " + deck + " Deck was shuffled!");} //1 not 2 because each subclass recieves its own version of the method.
         if (toInterface.devMode) {for (int i=0; i < 24; i++) {
             System.out.println("(DEV MODE) Here's the order:");
             System.out.println(deckOrder[i]);}}
+        shuffles++;
      }
     
 }

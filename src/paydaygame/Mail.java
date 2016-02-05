@@ -137,7 +137,7 @@ public class Mail extends Deck {
             this.shuffle(deckSize, "Mail");
             nextCard = 0;}
         nextCard++;
-        System.out.println("The mail deck has returned a card!");
+        toInterface.passString("The mail deck has returned a card!");
         deck[deckOrder[nextCard-1]].describeYourself();
         return deck[deckOrder[nextCard-1]];
     }
@@ -146,4 +146,9 @@ public class Mail extends Deck {
         return deckSize;
     }
     
+    public void updateCards (Interface i) {
+        for (int index = 0; index < deckSize; index++) {
+            deck[index].update(i);
+        }
+    }
 }
