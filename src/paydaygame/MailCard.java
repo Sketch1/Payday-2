@@ -57,6 +57,8 @@ public class MailCard {
             case "Pay A Neighbour":
                 toInterface.passString("This is a bill from another player demanding $" + -amount + "! The cad!");
                 //Danger, danger! toInterface does not exist in this class, hence, no print!
+            try {Thread.sleep(1000);}
+                catch (java.lang.InterruptedException error) {System.out.println("BLAM! SLEEP EXCEPTION!");}
         }
     }
     

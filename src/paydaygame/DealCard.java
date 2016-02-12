@@ -108,6 +108,8 @@ public class DealCard {
                 break;
         }
         toInterface.passString("He drew '" + name + ".' It costs $" + -buyPrice + " and, if sold, will return $" + -sellPrice + ".");
+        try {Thread.sleep(1000);}
+            catch (java.lang.InterruptedException error) {System.out.println("BLAM! SLEEP EXCEPTION!");}
         //Danger, danger! toInterface does not exist in this class, hence, no print!
         
     }

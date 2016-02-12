@@ -26,7 +26,7 @@ public class GameUI extends JPanel {
     int mailDeckSize;
     int dealDeckSize;
     
-    //Creates Image Variables And Arrays
+    //Creates Image Variables
     private BufferedImage boardImage;
     private BufferedImage $100;
     private BufferedImage $500;
@@ -39,12 +39,18 @@ public class GameUI extends JPanel {
     private BufferedImage mailCardImgs[];
     private BufferedImage dieFaces[];
     private BufferedImage counters[];
+    
+    //Creates Incidental Varibles
     int currentDie;
+    int noOfPlayers;
+    String currentOutput;
+    boolean textJustPainted;
+    
+    //Creates Counter Arrays
     int squareX[];
     int squareY[];
     int counterXOffset[];
     int counterYOffset[];
-    int noOfPlayers;
     int counterXStarting[];
     int counterYStarting[];
     int counterXCurrent[];
@@ -53,8 +59,26 @@ public class GameUI extends JPanel {
     int counterYGoal[];
     boolean counterMoving[];
     int counterMovementPercentage[];
-    String currentOutput;
-    boolean textJustPainted;
+    
+    //Creates Money Arrays
+    int noOfPlayer100s[];
+    int noOfPlayer500s[];
+    int noOfPlayer1000s[];
+    int noOfPlayer5000s[];
+    int noOfPlayer10000s[];
+    int moneyXOffset[];
+    int moneyYOffset[];
+    int moneyXStarting[];
+    int moneyYStarting[];
+    int moneyXCurrent[];
+    int moneyYCurrent[];
+    int moneyXGoal[];
+    int moneyYGoal[];
+    boolean moneyMoving[];
+    int moneyMovementPercentage[];
+    int[][] playerBillLocX;
+    int[][] playerBillLocY;
+    
     
     public GameUI (int nOP, Interface i, Deal d, Mail m, Board b) {
         //Creates URL Arrays
@@ -104,6 +128,17 @@ public class GameUI extends JPanel {
         counterYGoal = new int [6];
         counterMoving = new boolean [6];
         counterMovementPercentage = new int [6];
+        moneyXStarting = new int [5];
+        moneyYStarting = new int [5];
+        moneyXCurrent = new int [5];
+        moneyYCurrent = new int [5];
+        moneyXGoal = new int [5];
+        moneyYGoal = new int [5];
+        moneyMoving = new boolean [5];
+        moneyMovementPercentage = new int [5];
+        playerBillLocX = new int [5][6];
+        playerBillLocY = new int [5][6];
+        
         
         //Counter Offsets (From Upper Left Corner) Location Declaration
         counterXOffset[0] = 3;
@@ -118,6 +153,9 @@ public class GameUI extends JPanel {
         counterYOffset[4] = 58;
         counterXOffset[5] = 43;
         counterYOffset[5] = 53;
+        
+        //PlayerBillLoc Declaration
+        playerBillLocX[0][0] = 3;
         
         //URL Path Declaration
         URL boardImgUrl = this.getClass().getResource("resources/board.png");
@@ -197,7 +235,7 @@ public class GameUI extends JPanel {
         for (int index = 0; index < 6; index++) {
             if (counterMoving[index]) {
                 counterMovementPercentage[index] = counterMovementPercentage[index] + 1; //Adjust this number to change how fast the counters move.
-                Point tempPoint = animatedLocation2(counterXStarting[index], counterYStarting[index], counterXGoal[index], counterYGoal[index], counterMovementPercentage[index]);
+                Point tempPoint = animatedLocation(counterXStarting[index], counterYStarting[index], counterXGoal[index], counterYGoal[index], counterMovementPercentage[index]);
                 counterXCurrent[index] = tempPoint.x; counterYCurrent[index] = tempPoint.y;
                 this.render(g);
                 if (counterMovementPercentage[index] >= 100) {
@@ -265,21 +303,6 @@ public class GameUI extends JPanel {
         }
     
     public Point animatedLocation (int x1, int y1, int x2, int y2, int percentage) {
-        /*given an object moving from point x1, y1, to point x2, y2, determine its location when it is <percentage> of the way alongassuming a parabolic speed profile (fast--slow--fast)*/
-        Point thePoint = new Point(0,0);
-        double doublePercentage = percentage; // float the percentage
-        double scaledPercentage = doublePercentage/50.0; //scale percentage to between 0 and 2
-        double shiftedPercentage = scaledPercentage - 1; //shift the poercentage to be between -1 and +1
-        double adjustedPercentage1 = Math.cbrt(shiftedPercentage) + 1; //Take the cube root and add one. cbrt(x) + 1 gives result between 0 and 2
-        double adjustedPercentage = 50.0 * adjustedPercentage1; //scale result to between 0 to 100
-        //System.out.println("percentage " + percentage + " adjusted to " + adjustedPercentage); //DEBUG
-        // construct a Point that is adjustedPercentage along the way from (x1, y1) to (x2, y2)
-        thePoint.setLocation( (x2 - x1) * adjustedPercentage / 100.0 + x1, (y2 - y1) * adjustedPercentage / 100.0 + y1 );
-        //System.out.println("At " + percentage + "% of the way from (" + x1 + ", " + y1 + ") to (" + x2 + ", " + y2 + ") we are at (" + thePoint.getX() )", " + thePoint.getY() + ")."); //DEBUG
-        return thePoint;
-        } 
-    
-    public Point animatedLocation2 (int x1, int y1, int x2, int y2, int percentage) {
         /*given an object moving from point x1, y1, to point x2, y2, determine its location when it is <percentage> of the way along assuming a falling speed profile (fast--slow)*/
         Point thePoint = new Point(0,0);
         double doublePercentage = percentage; // float the percentage
@@ -304,11 +327,11 @@ public class GameUI extends JPanel {
     }
     
     public void roll (int i) {
-        int randomFace;
+        /*int randomFace;
         for (int index = 0; index < 3000; index++) {
         randomFace = new Random().nextInt(6)+1; 
         currentDie = randomFace;
-        }
+        }*///This doesn't work right now. Someday, the die faces will cycle past at blinding speed for a moment, before stopping at the right face.
         currentDie = i;
     }
     
@@ -319,10 +342,90 @@ public class GameUI extends JPanel {
         counterMoving[callerID] = true;
     }
     
+    public void moveBill(int type, int number, int payerID, int payeeID) {
+        if (payerID == -1) {
+            switch (type) {
+            case 4:
+                moneyXStarting[type] = 625; moneyYStarting[type] = 0;
+                moneyXGoal[type] = playerBillLocX[type] [payeeID]; moneyYGoal[type] = playerBillLocY[type] [payeeID]; 
+                moneyXCurrent[type] = moneyXStarting[type]; moneyYCurrent[type] = moneyYStarting[type];
+                moneyMoving[type] = true;
+                break;
+                /*TODO: Add check of moneyMoving in refresh; Add coords to playerBillLockX, Y*/
+            case 3:
+                moneyXStarting[type] = 550; moneyYStarting[type] = 0;
+                moneyXGoal[type] = playerBillLocX[type] [payeeID]; moneyYGoal[type] = playerBillLocY[type] [payeeID]; 
+                moneyXCurrent[type] = moneyXStarting[type]; moneyYCurrent[type] = moneyYStarting[type];
+                moneyMoving[type] = true;
+                break;
+            case 2:
+                moneyXStarting[type] = 475; moneyYStarting[type] = 0;
+                moneyXGoal[type] = playerBillLocX[type] [payeeID]; moneyYGoal[type] = playerBillLocY[type] [payeeID]; 
+                moneyXCurrent[type] = moneyXStarting[type]; moneyYCurrent[type] = moneyYStarting[type];
+                moneyMoving[type] = true;
+                break;
+            case 1:
+                moneyXStarting[type] = 400; moneyYStarting[type] = 0;
+                moneyXGoal[type] = playerBillLocX[type] [payeeID]; moneyYGoal[type] = playerBillLocY[type] [payeeID]; 
+                moneyXCurrent[type] = moneyXStarting[type]; moneyYCurrent[type] = moneyYStarting[type];
+                moneyMoving[type] = true;
+                break;
+            case 0:
+                moneyXStarting[type] = 325; moneyYStarting[type] = 0;
+                moneyXGoal[type] = playerBillLocX[type] [payeeID]; moneyYGoal[type] = playerBillLocY[type] [payeeID]; 
+                moneyXCurrent[type] = moneyXStarting[type]; moneyYCurrent[type] = moneyYStarting[type];
+                moneyMoving[type] = true;
+                break;
+            
+        }
+        }
+    }
+    
+    public void moveMoney (int callerID, int payee, int cash) {
+        if (payee == callerID && cash < 0) {
+            int outgoingBills[] = this.billCalc(cash);
+            for (int index = 0; index < 6; index++) {
+                if (outgoingBills[index] > 0) {
+                    this.moveBill(index, outgoingBills[index], -1, payee);
+                }
+            }
+        }
+        //else {/*Move money from player to Jackpot or player to player*/}
+    }
+    
     public void setCurrentOutput(String s) {
         currentOutput = s;
         System.out.println(s);
         textJustPainted = true;
+    }
+    
+    public int[] billCalc(int cash) {
+        int numberOfEachBill[];
+        numberOfEachBill = new int[5];
+        for (int index = 0; index < 5; index++) {
+            numberOfEachBill[index] = 0;
+        }
+        while (cash >= 10000) {
+            numberOfEachBill[4]++;
+            cash = cash - 10000;
+        }
+        while (cash >= 5000) {
+            numberOfEachBill[3]++;
+            cash = cash - 5000;
+        }
+        while (cash >= 1000) {
+            numberOfEachBill[2]++;
+            cash = cash - 1000;
+        }
+        while (cash >= 500) {
+            numberOfEachBill[1]++;
+            cash = cash - 500;
+        }
+        while (cash >= 100) {
+            numberOfEachBill[0]++;
+            cash = cash - 100;
+        }
+        return numberOfEachBill;
     }
     
    }

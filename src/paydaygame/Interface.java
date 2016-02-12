@@ -271,10 +271,10 @@ public class Interface extends javax.swing.JFrame {
         //TODO The reporting of stats and the showing of awesome crap
     }
     
-    public void allPayersPlay(int i, boolean bank) { /*This method causes all Players to pay a
+    public void allPayersPlay(int i, boolean bank, int payee) { /*This method causes all Players to pay a
         passed amount.*/
         for (int index = 0; index < noOfPlayers; index++) {
-            toPlayer[index].adjustBalance(-i, bank);}
+            toPlayer[index].decreaseBalance(-i, bank, payee);}
     }
     
     public void printCash(int cash, int callingPlayerMonth, int callingPlayer) {
