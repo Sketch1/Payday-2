@@ -16,7 +16,7 @@ public class Player {
     Board toBoard;
     Mail toMail;
     GameUI toGameUI;
-    int cash = 5000; //Players start with $5000
+    int cash = 0; //Players start with $5000
     int boardPosition = 0; //Players start on the Start Square.
     int month = 1; //Players start in month 1.
     int moveAhead;
@@ -25,6 +25,7 @@ public class Player {
     Deal toDeal;
     LinkedList handOfDealCards;
     boolean moving;
+    int billsIHave[];
     
     public Player(Interface i, Board b, int in, Mail m, Deal d) {
         /*Variables are initialized.*/
@@ -36,7 +37,7 @@ public class Player {
         System.out.println("Player " + ID + " has been created!");
         handOfDealCards = new LinkedList();
         moving = false;
-        
+        billsIHave = new int [5];
     }
     
     public void takeYourTurn() { /*The most important method in the game. Since
@@ -54,7 +55,7 @@ public class Player {
         this.sleep(1000);
         toGameUI.roll(movement);
         toInterface.passString("He rolled a " + movement);
-        if (movement == 6) {this.decreaseBalance(-toInterface.jackpot, false, ID);
+        if (movement == 6) {this.decreaseBalance(-toInterface.jackpot, false, ID, -1);
             toInterface.passString("Player " + ID + " rolled a 6! He wins the jackpot, taking home $" + toInterface.jackpot);
             this.sleep(1000);
             toInterface.jackpot = 0;}
@@ -81,7 +82,7 @@ public class Player {
                 } 
                 break;
             case "SweepstakesTirage": //Gains $5000
-                this.decreaseBalance(-5000, false, ID);
+                this.decreaseBalance(-5000, false, ID, -1);
                 toInterface.passString("Player " + ID + " has won the SweepstakesTirage!");
                 this.sleep(1000);
                 break;
@@ -103,11 +104,11 @@ public class Player {
                 this.sleep(1000);
                 toInterface.passString("He recives a total of $" + (1000+(100*toInterface.noOfPlayers)));
                 this.sleep(1000); //Move money around HERE.
-                winnerL.decreaseBalance(-1000-(100*toInterface.noOfPlayers), false, winnerL.ID);
+                winnerL.decreaseBalance(-1000-(100*toInterface.noOfPlayers), false, winnerL.ID, -1);
                 break;
             case "Pay": //Called by several squares, this causes the simple reduction of a Player's money.
                 //cash = cash - toBoard.additionalData[boardPosition];/* - Query additional data for amount*/;
-                this.decreaseBalance(toBoard.additionalData[boardPosition], true, -1);
+                this.decreaseBalance(toBoard.additionalData[boardPosition], true, -1, ID);
                 toInterface.passString("Thanks to where he landed, Player " + ID + " payed through the nose!"); //It's time to make this more specific.
                 this.sleep(1000);
                 break;
@@ -117,7 +118,7 @@ public class Player {
                 Player winnerRS = toInterface.getOtherPlayer(-1);
                 toInterface.passString("Player " + winnerRS.ID + " has won the Radioshow! He gets $1000!");
                 this.sleep(1000);
-                winnerRS.decreaseBalance(-1000, false, winnerRS.ID);
+                winnerRS.decreaseBalance(-1000, false, winnerRS.ID, -1);
                 break;
             case "Buyer": //This causes the player to sell the highest priced DealCard he has. It deverts to sellDealCard.
                 //Sell highest price deal card
@@ -131,8 +132,8 @@ public class Player {
                 //cash = cash + toInterface.noOfPlayers*100;/*+ number of players playing x 100*/;
                 toInterface.passString("He collected $100 from each player, bringing his total takings to " + -toInterface.noOfPlayers*100);
                 this.sleep(1000);
-                this.decreaseBalance(toInterface.noOfPlayers*-100, false, ID);
-                toInterface.allPayersPlay(toInterface.noOfPlayers*-100, false, ID);
+                this.decreaseBalance(toInterface.noOfPlayers*-100, false, ID, -1);
+                toInterface.allPayersPlay(toInterface.noOfPlayers*-100, false, ID);//REDESIGN IN ORDER
                 break;
             case "Yardsale": //Allows the Player to aquire a DealCard increadably cheeply.
                 toInterface.passString("Player " + ID + "has gone to a yard sale. He found a great deal!");
@@ -150,13 +151,13 @@ public class Player {
                 this.sleep(1000);
                 toInterface.allPayersPlay(money, true, -1);
                 //cash = cash + (money);
-                this.decreaseBalance(-money, true, -1);
+                this.decreaseBalance(-money, true, -1, ID);
                 break;
             case "Payday": //Player aquires $3500 and checks if the game is over.
                 toInterface.passString("Player " + ID + " has landed on PAYDAY!");
                 this.sleep(1000);
                 //cash = cash + 3500;
-                this.decreaseBalance(-3500, false, ID);
+                this.decreaseBalance(-3500, false, ID, -1);
                 month++;
                 toInterface.passString("He is now in month " + month);
                 this.sleep(1000);
@@ -201,18 +202,20 @@ public class Player {
         else { //The method does not end here, even though it looks like it.
             switch (toWhom) {
                 case "pay": //Basic bills cause the Player to pay money to the bank
-                    //cash = cash + amount;
-                    toInterface.passString("Player " + ID + " Payed a bill for " + -amount);
+                    toInterface.passString("Player " + ID + " Payed a bill for " + amount);
                     this.sleep(1000);
-                    this.decreaseBalance(amount, true, -1);
+                    this.decreaseBalance(-amount, true, -1, ID);
                     break;
                 case "player": //Players pay money to other players. Sometimes the current Player is on the receiving end.
-                    Player payee = toInterface.getOtherPlayer(ID);
-                    //cash = cash + amount;
-                    toInterface.passString("Player " + payee.ID + " payed Player " + ID + " $" + amount);
-                    this.sleep(1000);
-                    this.decreaseBalance(-amount, false, payee.ID);
-                    payee.decreaseBalance(amount, false, payee.ID);
+                    Player otherPlayer = toInterface.getOtherPlayer(ID);
+                    if (amount > 0) { //This means that OtherPlayer is paying CurrentPlayer
+                        toInterface.passString("Player " + otherPlayer.ID + " payed Player " + ID + " $" + amount);
+                        this.sleep(1000);
+                        this.decreaseBalance(-amount, false, ID, otherPlayer.ID);}
+                    else { //This means that CurrentPlayer is paying OtherPlayer
+                        toInterface.passString("Player " + ID + " payed Player " + otherPlayer.ID + " $" + amount);
+                        this.sleep(1000);
+                        this.decreaseBalance(amount, false, otherPlayer.ID, ID);}
                     break;
             }
         }
@@ -229,7 +232,7 @@ public class Player {
         if (cash > buyPrice) {//cash = cash - buyPrice;
             toInterface.passString("Player " + ID + " bought a Deal!");
             this.sleep(1000);
-            this.decreaseBalance(buyPrice, true, -1);
+            this.decreaseBalance(buyPrice, true, -1, ID);
             handOfDealCards.add(d);
         }
         else {toInterface.passString("Oh no! Player " + ID + " couldn't aford his deal!");
@@ -250,33 +253,39 @@ public class Player {
             if (card.getsellPrice() > highestPrice) {highestPrice = card.getsellPrice(); indexOfHighestPrice = index;} 
         }
         //cash = cash + highestPrice;
-        this.decreaseBalance(-highestPrice, false, ID);
+        this.decreaseBalance(-highestPrice, false, ID, -1);
         handOfDealCards.remove(indexOfHighestPrice);
     }
     
-    public void decreaseBalance(int a, boolean bank, int payee) { /*This is the method though which all 
+    public void decreaseBalance(int a, boolean bank, int payee, int payer) { /*This is the method though which all 
         changes to the Player's balance must pass. The method currently works
         on an inverted system, because when it was created, it was handling only
         certain transactions, where it made more sense to subtract a. Now, though,
         it handles all transactions, and so the code is hard to read. Some day, we
         might fix this.*/
         cash = cash - a;
+        if (payee >= 0 && payer >= 0) {toInterface.getPlayer(payee).cash = toInterface.getPlayer(payee).cash + a;}
         toInterface.passString("Player " + ID + "'s Balance is now $" + cash);
         this.sleep(1000);
         toInterface.printCash(cash, month, ID);
         if (bank) {toInterface.jackpot = toInterface.jackpot+a;
             toInterface.passString("Thanks to the type of transaction, " + a + " was added to the Jackpot!");
             this.sleep(1000);
-            toInterface.passString("It's now $" + -toInterface.jackpot);
+            toInterface.passString("It's now $" + toInterface.jackpot);
             this.sleep(1000);}
-        toGameUI.moveMoney(ID, payee, a);
+        if (payer != -1) {
+            System.out.println(billsIHave);
+            toGameUI.change(payer, Math.abs(a));
+            System.out.println(billsIHave);}
+        toGameUI.moveMoney(ID, payee, a, payer);
         /*Payee: -1 = Jackpot (Bank); 0-5 Players;*/
+        //Wait for Money To Return
     }
     
     public boolean getFinished() { //Basic getters.
-        if (finished) {toInterface.passString("Player " + ID + " is finished!"); this.decreaseBalance(-0, false, ID);
+        if (finished) {toInterface.passString("Player " + ID + " is finished!"); this.decreaseBalance(-0, false, ID, -1);
             this.sleep(1000);}
-        else {toInterface.passString("Player " + ID + " is not finished"); this.decreaseBalance(-0, false, ID);
+        else {toInterface.passString("Player " + ID + " is not finished"); this.decreaseBalance(-0, false, ID, -1);
             this.sleep(1000);}
         return finished;
     }
@@ -296,6 +305,14 @@ public class Player {
     
     public void setGameUI(GameUI g) {
         toGameUI = g;
+    }
+    
+    public void setBillsIHave(int billType, int number) {
+        billsIHave[billType] = number;
+    }
+    
+    public int getBillsIHave(int billType) {
+        return billsIHave[billType];
     }
     
 }
