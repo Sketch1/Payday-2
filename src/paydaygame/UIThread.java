@@ -5,21 +5,29 @@ package paydaygame;
 
 import java.awt.Graphics;
 
-public class UIThread extends Thread {
+public class UIThread implements Runnable {
     
     GameUI toGameUI;
     Interface toInterface;
+    String lockObj;
     
-    public void update(Interface i, GameUI g) {
-        toGameUI = g;
+    public UIThread(String l) {
+        lockObj = l;
+    }
+    
+    public void setToInterface(Interface i) {
         toInterface = i;
+    }
+    
+    public void setToGameUI(GameUI g) {
+        toGameUI = g;
     }
     
     @Override
     public void run() {
-        System.out.println("RunUI: 'Called!'");
+        System.out.println("UIThread running");
         while (!toInterface.finished) {
-            Graphics myGraphics = toGameUI.getGraphics();
+            Graphics myGraphics = toGameUI.getGraphics();//Problems...
             toGameUI.refresh(myGraphics);
             //toGameUI.render(myGraphics);
             //toGameUI.repaint();

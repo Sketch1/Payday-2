@@ -39,7 +39,7 @@ public class GameUI extends JPanel {
     //Creates Incidental Varibles
     int currentDie;
     int noOfPlayers;
-    String currentOutput;
+    String currentOutput = "";
     boolean textJustPainted;
     int playerCurrentlyRecievingMoney;
     int playerCurrentlySendingMoney;
@@ -287,14 +287,15 @@ public class GameUI extends JPanel {
                 if (moneyMovementPercentage[index] >= 100) {
                     moneyMovementPercentage[index] = 0;
                     moneyMoving[index] = false;
-                    if (!moneyMoving[0] && !moneyMoving[1] && !moneyMoving[2] && !moneyMoving[3] && !moneyMoving[4]) {anyMoneyMoving = false;}
-                    if (playerCurrentlyRecievingMoney >= 0) {toPlayer[playerCurrentlyRecievingMoney].setBillsIHave(index, toPlayer[playerCurrentlyRecievingMoney].getBillsIHave(index)+1);}
-                    if (playerCurrentlySendingMoney >= 0) {toPlayer[playerCurrentlySendingMoney].setBillsIHave(index, toPlayer[playerCurrentlySendingMoney].getBillsIHave(index)-1);}
+                    synchronized(toInterface.lockObj) {
+                    toInterface.lockObj.notify();}
+                    if (!moneyMoving[0] && !moneyMoving[1] && !moneyMoving[2] && !moneyMoving[3] && !moneyMoving[4]) {
+                        anyMoneyMoving = false;
+                    }
                 }
                 this.render(g);
             }
         }
-        //this.render(g);
     }
 
     public void render(Graphics g) {
@@ -343,13 +344,15 @@ public class GameUI extends JPanel {
             g2d.setFont(billFont); 
             for (int p = 0; p < noOfPlayers; p++) {
                 for (int b = 0; b < 5; b++) {
+                    g2d.drawImage(counters[p], billXCoords[4]+50, playerYCoords[p], this);
+                    g2d.drawString("$" + toPlayer[p].getCash(), billXCoords[4]+50, playerYCoords[p]+50);
                     if (toPlayer[p].getBillsIHave(b) > 0) {
                     g2d.drawImage(bills[b], billXCoords[b], playerYCoords[p], this);
                     g2d.drawString("x" + toPlayer[p].getBillsIHave(b), billXCoords[b]+35, playerYCoords[p]+100);
                     }
                 }
             }
-       }
+        }
     }
     
     @Override
@@ -381,13 +384,13 @@ public class GameUI extends JPanel {
         return destinationLoc;
     }
 
-    public void roll(int i) {
+    public void roll(int n) {
         /*int randomFace;
          for (int index = 0; index < 3000; index++) {
          randomFace = new Random().nextInt(6)+1; 
          currentDie = randomFace;
          }*///This doesn't work right now. Someday, the die faces will cycle past at blinding speed for a moment, before stopping at the right face.
-        currentDie = i;
+        currentDie = n;
     }
 
     public void moveCounter(int callerID, int endingSquare) { //Player will call this method.
@@ -472,7 +475,7 @@ public class GameUI extends JPanel {
         }
     }
 
-    public void moveMoney(int callerID, int payee, int cash, int payer) {
+    public int[] moveMoney(int callerID, int payee, int cash, int payer) {
         anyMoneyMoving = true;
         int outgoingBills[] = this.billCalc(Math.abs(cash));
         for (int index = 0; index < 5; index++) {
@@ -480,12 +483,7 @@ public class GameUI extends JPanel {
                 this.moveBill(index, outgoingBills[index], payer, payee);
             }
         }  
-        while (anyMoneyMoving) {
-                //idle
-                i = i + 1;
-                if (i == 1) {System.out.println("Stuck1, " + i);}
-        }
-        i = 0;
+        return outgoingBills;
     }
 
     public void setCurrentOutput(String s) {

@@ -52,7 +52,7 @@ public class MailCard {
                 System.out.println("This is a request of cash from a certain charity, totalling $" + -amount + ".");
                 break;
             case "Mad Money":
-                System.out.println("This is a lot of money ($" + -amount + "!) from another player! Yeah!");
+                System.out.println("This is a lot of money ($" + amount + "!) from another player! Yeah!");
                 break;
             case "Pay A Neighbour":
                 toInterface.passString("This is a bill from another player demanding $" + -amount + "! The cad!");
