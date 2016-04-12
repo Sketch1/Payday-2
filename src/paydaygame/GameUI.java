@@ -13,8 +13,11 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Font;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
-public class GameUI extends JPanel {
+
+public class GameUI extends JPanel implements KeyListener {
 
     JFrame toJFrame;
     Interface toInterface;
@@ -76,6 +79,7 @@ public class GameUI extends JPanel {
     int moneyYGoal[];
     boolean moneyMoving[];
     boolean anyMoneyMoving;
+    boolean moneyJustMoved;
     int moneyMovementPercentage[];
     int[] billXCoords;
     int[] playerYCoords;
@@ -91,8 +95,13 @@ public class GameUI extends JPanel {
         //Creates JFrame
         toJFrame = new JFrame("Payday. The Game. It's Cool.");
         toJFrame.add(this);
-        toJFrame.setSize(1200, 1000);
+        toJFrame.setSize(1200, 1000); 
+        toJFrame.setLocationByPlatform(true);
         toJFrame.setVisible(true);
+        KeyBoard toKeyBoard = new KeyBoard();
+        toJFrame.addKeyListener(toKeyBoard);
+        this.setFocusable(true);
+        this.requestFocusInWindow();
         toJFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Class Pointer Declaration
@@ -291,6 +300,7 @@ public class GameUI extends JPanel {
                     toInterface.lockObj.notify();}
                     if (!moneyMoving[0] && !moneyMoving[1] && !moneyMoving[2] && !moneyMoving[3] && !moneyMoving[4]) {
                         anyMoneyMoving = false;
+                        moneyJustMoved = true;
                     }
                 }
                 this.render(g);
@@ -327,7 +337,7 @@ public class GameUI extends JPanel {
             g2d.drawImage(counters[index], counterXCurrent[index], counterYCurrent[index], this);
         }
         
-        if (anyMoneyMoving) {
+        if (anyMoneyMoving || moneyJustMoved) {
             g2d.setColor(Color.white);
             g2d.fillRect(701, 146, 1200, 1000); //White retangle behind money 
             g2d.setColor(Color.black);
@@ -352,6 +362,7 @@ public class GameUI extends JPanel {
                     }
                 }
             }
+            moneyJustMoved = false;
         }
     }
     
@@ -580,6 +591,24 @@ public class GameUI extends JPanel {
                 }
                 else {billToChange = -1;}
             }
+        }
+    }
+    
+    @Override
+    public void keyTyped(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_Q) {
+            System.exit(0);
+        }
+	}
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_Q) {
+            System.exit(0);
         }
     }
 }

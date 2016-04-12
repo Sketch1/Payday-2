@@ -27,7 +27,7 @@ public class UIThread implements Runnable {
     public void run() {
         System.out.println("UIThread running");
         while (!toInterface.finished) {
-            Graphics myGraphics = toGameUI.getGraphics();//Problems...
+            Graphics myGraphics = toGameUI.getGraphics();
             toGameUI.refresh(myGraphics);
             //toGameUI.render(myGraphics);
             //toGameUI.repaint();

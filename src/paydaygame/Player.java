@@ -202,18 +202,18 @@ public class Player {
         else { //The method does not end here, even though it looks like it.
             switch (toWhom) {
                 case "pay": //Basic bills cause the Player to pay money to the bank
-                    toInterface.passString("Player " + ID + " Payed a bill for " + amount);
+                    toInterface.passString("Player " + ID + " Payed a bill for " + -amount);
                     this.customSleep(1000);
                     this.decreaseBalance(-amount, true, -1, ID);
                     break;
                 case "player": //Players pay money to other players. Sometimes the current Player is on the receiving end.
                     Player otherPlayer = toInterface.getOtherPlayer(ID);
                     if (amount > 0) { //This means that OtherPlayer is paying CurrentPlayer
-                        toInterface.passString("Player " + otherPlayer.ID + " payed Player " + ID + " $" + amount);
+                        toInterface.passString("Player " + otherPlayer.ID + " payed Player " + ID + " $" + -amount);
                         this.customSleep(1000);
                         this.decreaseBalance(-amount, false, ID, otherPlayer.ID);}
                     else { //This means that CurrentPlayer is paying OtherPlayer
-                        toInterface.passString("Player " + ID + " payed Player " + otherPlayer.ID + " $" + amount);
+                        toInterface.passString("Player " + ID + " payed Player " + otherPlayer.ID + " $" + -amount);
                         this.customSleep(1000);
                         this.decreaseBalance(amount, false, otherPlayer.ID, ID);}
                     break;
@@ -257,19 +257,19 @@ public class Player {
         handOfDealCards.remove(indexOfHighestPrice);
     }
     
-    public void decreaseBalance(int a, boolean bank, int payee, int payer) { /*This is the method though which all 
+    public void decreaseBalance(int a, boolean jackpot, int payee, int payer) { /*This is the method though which all 
         changes to the Player's balance must pass. The method currently works
         on an inverted system, because when it was created, it was handling only
         certain transactions, where it made more sense to subtract a. Now, though,
         it handles all transactions, and so the code is hard to read. Some day, we
         might fix this.*/
         if (a == 0) {return;}
-        cash = cash - a;
-        if (payee >= 0 && payer >= 0) {toInterface.getPlayer(payee).cash = toInterface.getPlayer(payee).cash + a;}//Two if lines, one who adjust payee, one to adjust payer. Then check if we are one of these
+        if (payee != -1) {toInterface.getPlayer(payee).cash = toInterface.getPlayer(payee).cash - a;}//A is negative if the player is recieving money
+        if (payer != -1) {toInterface.getPlayer(payer).cash = toInterface.getPlayer(payer).cash - a;}
         toInterface.passString("Player " + ID + "'s Balance is now $" + cash);
         this.customSleep(1000);
         toInterface.printCash(cash, month, ID);
-        if (bank) {toInterface.jackpot = toInterface.jackpot+a;
+        if (jackpot) {toInterface.jackpot = toInterface.jackpot+a;
             toInterface.passString("Thanks to the type of transaction, " + a + " was added to the Jackpot!");
             this.customSleep(1000);
             toInterface.passString("It's now $" + toInterface.jackpot);

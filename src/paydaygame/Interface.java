@@ -28,19 +28,26 @@ public class Interface extends javax.swing.JFrame implements Runnable {
     boolean devMode;
     boolean finished = true;
     boolean ready = false;
+    boolean goButtonPressed = false;
     String lockObj;
     
     public Interface(String l, UIThread u, Thread t) {
         lockObj = l;
         toUIThread = u;
         toUIThreadsThread = t;
+        initComponents();
         }
     
     @Override
     public void run() {
-        initComponents();
         this.setVisible(true);
         toUIThread.setToInterface(this);
+        while(!goButtonPressed) {
+        try {Thread.sleep(1000);}
+            catch (java.lang.InterruptedException error)
+            {System.out.println("BLAM! SLEEP EXCEPTION!");}
+        }
+        startGame();
     }
     
     public void startGame() { /*This is the method which is called by goButtonActionPerformed.
@@ -52,7 +59,7 @@ public class Interface extends javax.swing.JFrame implements Runnable {
         toDeal = new Deal(this);
         toMail = new Mail(this);
         toBoard = new Board();
-        toStatWindow = new StatWindow(noOfPlayers, noOfMonths);
+        //toStatWindow = new StatWindow(noOfPlayers, noOfMonths);
         System.out.println("Setting up the game..."); 
         toPlayer = new Player[noOfPlayers];
         for (int index = 0; index < noOfPlayers; index++) {
@@ -100,6 +107,7 @@ public class Interface extends javax.swing.JFrame implements Runnable {
         goButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        stopButton = new javax.swing.JButton();
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -176,6 +184,13 @@ public class Interface extends javax.swing.JFrame implements Runnable {
 
         jLabel2.setText("No. Of Months");
 
+        stopButton.setText("STOP!");
+        stopButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                stopButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -196,10 +211,12 @@ public class Interface extends javax.swing.JFrame implements Runnable {
                         .addContainerGap()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(83, 83, 83)
-                        .addComponent(goButton))
+                        .addGap(32, 32, 32)
+                        .addComponent(goButton)
+                        .addGap(32, 32, 32)
+                        .addComponent(stopButton))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(91, 91, 91)
+                        .addGap(92, 92, 92)
                         .addComponent(lable1)))
                 .addContainerGap(15, Short.MAX_VALUE))
         );
@@ -218,7 +235,9 @@ public class Interface extends javax.swing.JFrame implements Runnable {
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(goButton))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(goButton)
+                    .addComponent(stopButton)))
         );
 
         pack();
@@ -238,24 +257,19 @@ public class Interface extends javax.swing.JFrame implements Runnable {
         String noOfPlayersString = noOfPlayersField.getText();
         noOfMonths = Integer.parseInt(noOfMonthsString);
         noOfPlayers = Integer.parseInt(noOfPlayersString);
-        if (index > 0) {toStatWindow.close(); }
+        //if (index > 0) {toStatWindow.close(); }
         System.out.println("The game is starting!");
-        startGame();
+        goButtonPressed = true;
     }//GEN-LAST:event_goButtonActionPerformed
 
     private void noOfPlayersFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_noOfPlayersFieldActionPerformed
        
     }//GEN-LAST:event_noOfPlayersFieldActionPerformed
 
-    /*public static void kick() { 
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                
-            new Interface().setVisible(true);
-            }
-        });
-    }*/
-    
+    private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopButtonActionPerformed
+        System.exit(0);
+    }//GEN-LAST:event_stopButtonActionPerformed
+
     public Player getOtherPlayer(int i) { /*This method returns a random Player 
         from those playing. If passed -1, it will return any Player.*/
         int n = i;
@@ -294,7 +308,7 @@ public class Interface extends javax.swing.JFrame implements Runnable {
     
     public void printCash(int cash, int callingPlayerMonth, int callingPlayer) {
         /*This method prints out a Player's current cash into the stats window.*/
-        toStatWindow.setValueAt("$"+cash, callingPlayerMonth, callingPlayer);
+        //toStatWindow.setValueAt("$"+cash, callingPlayerMonth, callingPlayer);
     }
     
     public Player getPlayer(int ID) {
@@ -324,5 +338,6 @@ public class Interface extends javax.swing.JFrame implements Runnable {
     private javax.swing.JLabel lable1;
     private javax.swing.JTextField noOfMonthsField;
     private javax.swing.JTextField noOfPlayersField;
+    private javax.swing.JButton stopButton;
     // End of variables declaration//GEN-END:variables
 }
